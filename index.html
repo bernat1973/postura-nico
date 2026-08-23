@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Postura Nico</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1e3a5f">
+<style>
+  :root{
+    --bg:#0f2038; --card:#16304f; --card2:#1c3a5e; --accent:#4fd1c5; --accent2:#f6ad55;
+    --text:#eaf2f8; --textdim:#9fb3c8; --ok:#48bb78; --danger:#f56565; --border:#274969;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Segoe UI,Roboto,sans-serif;
+    min-height:100vh; overscroll-behavior-y:none;}
+  body{padding-bottom:90px;}
+  header{position:sticky;top:0;z-index:10;background:var(--bg);padding:16px 16px 8px;
+    border-bottom:1px solid var(--border);}
+  h1{font-size:22px;margin:0 0 4px;}
+  .sub{color:var(--textdim);font-size:13px;margin:0;}
+  main{padding:16px;max-width:520px;margin:0 auto;}
+  .stats{display:flex;gap:10px;margin-bottom:18px;}
+  .stat{flex:1;background:var(--card);border-radius:16px;padding:14px 10px;text-align:center;border:1px solid var(--border);}
+  .stat .num{font-size:26px;font-weight:700;color:var(--accent);}
+  .stat .lbl{font-size:11px;color:var(--textdim);margin-top:2px;}
+  .phase-banner{background:linear-gradient(135deg,var(--card2),var(--card));border:1px solid var(--border);
+    border-radius:16px;padding:14px;margin-bottom:18px;}
+  .phase-banner .t{font-size:14px;font-weight:600;color:var(--accent2);}
+  .phase-banner .d{font-size:12px;color:var(--textdim);margin-top:4px;}
+  .progress-track{height:6px;background:var(--border);border-radius:4px;margin-top:10px;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--accent);border-radius:4px;transition:width .3s;}
+  .daily-note{background:#2a3f2a;border:1px solid #3f5f3f;border-radius:14px;padding:12px 14px;
+    margin-bottom:18px;font-size:13px;line-height:1.5;}
+  .daily-note b{color:var(--accent2);}
+  h2{font-size:15px;color:var(--textdim);text-transform:uppercase;letter-spacing:.5px;margin:22px 0 10px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:12px;overflow:hidden;}
+  .card.done{border-color:var(--ok);}
+  .card-head{display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;}
+  .check{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);flex:none;
+    display:flex;align-items:center;justify-content:center;font-size:15px;transition:.15s;}
+  .card.done .check{background:var(--ok);border-color:var(--ok);}
+  .ex-title{flex:1;}
+  .ex-title .name{font-size:15px;font-weight:600;}
+  .ex-title .reps{font-size:12px;color:var(--textdim);margin-top:2px;}
+  .chev{color:var(--textdim);font-size:12px;transition:transform .2s;}
+  .card.open .chev{transform:rotate(180deg);}
+  .card-body{max-height:0;overflow:hidden;transition:max-height .25s ease;}
+  .card.open .card-body{max-height:520px;}
+  .card-body-inner{padding:0 14px 16px;}
+  .illus{width:100%;background:var(--card2);border-radius:12px;padding:8px 0;margin-bottom:10px;}
+  .illus svg{width:100%;height:120px;display:block;}
+  .steps{margin:0;padding-left:18px;font-size:13.5px;line-height:1.6;color:var(--text);}
+  .steps li{margin-bottom:4px;}
+  .cond{display:inline-block;margin-top:8px;font-size:11.5px;background:#3a2f1a;color:var(--accent2);
+    padding:4px 8px;border-radius:8px;}
+  .video-slot{margin-top:10px;font-size:12px;color:var(--textdim);}
+  .video-slot a{color:var(--accent);}
+  .locked{opacity:.45;}
+  .locked .card-head{cursor:default;}
+  .lock-tag{font-size:11px;color:var(--textdim);background:var(--card2);padding:3px 8px;border-radius:8px;}
+  footer{position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:1px solid var(--border);
+    padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:flex;justify-content:center;}
+  .complete-btn{width:100%;max-width:520px;background:var(--accent);color:#06282a;border:none;
+    padding:14px;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;}
+  .complete-btn:disabled{background:var(--border);color:var(--textdim);}
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;
+    z-index:50;padding:20px;}
+  .modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:26px 22px;
+    max-width:380px;text-align:center;}
+  .modal .emoji{font-size:44px;}
+  .modal h3{margin:10px 0 6px;font-size:19px;}
+  .modal p{color:var(--textdim);font-size:14px;line-height:1.5;}
+  .modal button{margin-top:16px;background:var(--accent);border:none;color:#06282a;font-weight:700;
+    padding:12px 26px;border-radius:12px;font-size:14px;cursor:pointer;}
+  .tabs{display:flex;gap:8px;margin-bottom:16px;}
+  .tab{flex:1;text-align:center;padding:9px;border-radius:12px;background:var(--card);
+    border:1px solid var(--border);font-size:13px;color:var(--textdim);cursor:pointer;}
+  .tab.active{background:var(--accent);color:#06282a;font-weight:700;border-color:var(--accent);}
+  .rewards-list{display:flex;flex-direction:column;gap:8px;}
+  .rw{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);
+    border-radius:14px;padding:12px;}
+  .rw.got{border-color:var(--accent2);}
+  .rw .n{width:26px;height:26px;border-radius:50%;background:var(--card2);display:flex;align-items:center;
+    justify-content:center;font-size:12px;flex:none;}
+  .rw.got .n{background:var(--accent2);color:#3a2000;}
+  .rw .desc{font-size:13.5px;}
+  .rw .tag{margin-left:auto;font-size:11px;color:var(--textdim);}
+  .hist{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+  .hd{aspect-ratio:1;border-radius:8px;background:var(--card2);display:flex;align-items:center;
+    justify-content:center;font-size:10px;color:var(--textdim);}
+  .hd.done{background:var(--ok);color:#06280f;font-weight:700;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🦵 Postura — Nico</h1>
+  <p class="sub" id="dateLine"></p>
+</header>
+
+<main>
+  <div class="tabs">
+    <div class="tab active" data-tab="hoy">Hoy</div>
+    <div class="tab" data-tab="premios">Premios</div>
+    <div class="tab" data-tab="historial">Historial</div>
+  </div>
+
+  <div id="view-hoy">
+    <div class="stats">
+      <div class="stat"><div class="num" id="streakNum">0</div><div class="lbl">días seguidos</div></div>
+      <div class="stat"><div class="num" id="totalNum">0</div><div class="lbl">sesiones totales</div></div>
+      <div class="stat"><div class="num" id="nextReward">14</div><div class="lbl">días p/ premio</div></div>
+    </div>
+
+    <div class="phase-banner">
+      <div class="t" id="phaseTitle">Fase 1 · Base</div>
+      <div class="d" id="phaseDesc">Semanas 1–2: aprender el control de la pelvis.</div>
+      <div class="progress-track"><div class="progress-fill" id="phaseFill" style="width:0%"></div></div>
+    </div>
+
+    <div class="daily-note">
+      🧘 <b>Todos los días</b>, no solo días de rutina: pausa de postura <b>Brügger</b> — siéntate en el borde de la silla, activa un poco abdomen y glúteo, abre el pecho, relaja hombros, 5 respiraciones. Repite 3–5 veces al día, sobre todo si llevas rato sentado. No hace falta meter tripa todo el rato, solo estar cómodo y no arqueado.
+    </div>
+
+    <h2>Rutina de hoy (2–3 días/semana)</h2>
+    <div id="exerciseList"></div>
+
+  </div>
+
+  <div id="view-premios" style="display:none">
+    <h2>Racha de premios (cada 14 días seguidos)</h2>
+    <div class="rewards-list" id="rewardsList"></div>
+  </div>
+
+  <div id="view-historial" style="display:none">
+    <h2 id="histMonth">Últimos días</h2>
+    <div class="hist" id="histGrid"></div>
+  </div>
+</main>
+
+<footer>
+  <button class="complete-btn" id="completeBtn" disabled>Marca los ejercicios de hoy</button>
+</footer>
+
+<div class="modal-bg" id="rewardModal" style="display:none">
+  <div class="modal">
+    <div class="emoji">🏆</div>
+    <h3>¡14 días seguidos!</h3>
+    <p id="rewardModalText"></p>
+    <button onclick="closeModal()">Genial</button>
+  </div>
+</div>
+
+<script>
+/* ============ DATOS DEL PROGRAMA ============ */
+const EXERCISES = [
+  {
+    id: 'control_pelvis',
+    name: 'Control de pelvis (tumbado)',
+    reps: '2 series × 10 repeticiones',
+    phase: 1,
+    steps: [
+      'Túmbate boca arriba, rodillas dobladas, pies apoyados.',
+      'Mete un poco la espalda baja hacia el suelo (aplanarla) y aguanta 2 segundos.',
+      'Ahora arquea un poco la espalda baja, separándola del suelo, 2 segundos.',
+      'Busca el punto de en medio: ni aplanada ni arqueada. Ese es tu punto "neutro".',
+      'Repite el movimiento lento, con respiración normal, 10 veces.'
+    ],
+    svg: svgControlPelvis
+  },
+  {
+    id: 'flexor_cadera',
+    name: 'Estiramiento flexor de cadera',
+    reps: '2 series × 25 segundos por lado',
+    phase: 1,
+    condicional: 'Solo si notas tirantez en la parte delantera de la cadera al hacerlo. Si no notas nada, no pasa nada, sáltatelo.',
+    steps: [
+      'Ponte en posición de zancada (una rodilla apoyada en el suelo, la otra pierna delante doblada).',
+      'Aprieta el glúteo de la pierna de atrás y empuja la cadera suavemente hacia delante.',
+      'Debes notarlo en la parte delantera de la cadera de atrás, NO en la zona lumbar.',
+      'Si notas la zona lumbar, para y coloca la pelvis más recta.',
+      'Aguanta 25 segundos, respira normal, cambia de lado.'
+    ],
+    svg: svgFlexorCadera
+  },
+  {
+    id: 'puente',
+    name: 'Puente de glúteos',
+    reps: '3 series × 10 repeticiones',
+    phase: 1,
+    steps: [
+      'Túmbate boca arriba, rodillas dobladas, pies apoyados cerca de los glúteos.',
+      'Aprieta abdomen y glúteos y sube las caderas hacia el techo.',
+      'Para cuando el cuerpo forme una línea recta de rodillas a hombros — no subas más.',
+      'No arquees la espalda al final, el movimiento lo hace el glúteo, no la zona lumbar.',
+      'Baja despacio y repite.'
+    ],
+    svg: svgPuente
+  },
+  {
+    id: 'dead_bug',
+    name: 'Dead bug',
+    reps: '2 series × 8 repeticiones por lado',
+    phase: 2,
+    steps: [
+      'Túmbate boca arriba, brazos hacia el techo, caderas y rodillas a 90 grados.',
+      'Aprieta el abdomen como si fueras a recibir un golpe suave en la barriga.',
+      'Baja lentamente un brazo y la pierna contraria hacia el suelo, sin que la espalda baja se despegue ni se arquee.',
+      'Vuelve al centro y cambia de lado.',
+      'Si notas que la espalda se arquea, no bajes tanto el brazo/pierna.'
+    ],
+    svg: svgDeadBug
+  },
+  {
+    id: 'bird_dog',
+    name: 'Bird-dog',
+    reps: '2 series × 6 repeticiones por lado',
+    phase: 3,
+    steps: [
+      'Ponte a cuatro patas, manos bajo hombros, rodillas bajo caderas.',
+      'Aprieta el abdomen para que la espalda no se mueva.',
+      'Estira un brazo hacia delante y la pierna contraria hacia atrás, a la vez, despacio.',
+      'La cadera y los hombros deben quedarse quietos, sin girar.',
+      'Vuelve al centro con control y cambia de lado.'
+    ],
+    svg: svgBirdDog
+  },
+  {
+    id: 'plancha_lateral',
+    name: 'Plancha lateral con rodillas',
+    reps: '2 series × 15–20 segundos por lado',
+    phase: 3,
+    steps: [
+      'Túmbate de lado, apoyado en el antebrazo, rodillas dobladas hacia atrás.',
+      'Levanta la cadera del suelo, formando una línea recta entre hombro, cadera y rodillas.',
+      'Aprieta el abdomen y aguanta sin dejar caer la cadera.',
+      'Respira normal durante los segundos que aguantes.',
+      'Cambia de lado.'
+    ],
+    svg: svgPlanchaLateral
+  },
+  {
+    id: 'split_squat',
+    name: 'Sentadilla dividida asistida',
+    reps: '2 series × 8 repeticiones por pierna',
+    phase: 4,
+    steps: [
+      'Colócate en zancada, agarrándote a una pared o silla con una mano para el equilibrio.',
+      'Baja unos centímetros doblando ambas rodillas, manteniendo el tronco recto.',
+      'La rodilla de delante debe apuntar hacia el segundo dedo del pie, no hacia dentro.',
+      'No saques la barriga ni arquees la zona lumbar al bajar.',
+      'Sube empujando el suelo con el pie de delante.'
+    ],
+    svg: svgSplitSquat
+  }
+];
+
+const PHASES = [
+  {n:1, sessionsFrom:0, title:'Fase 1 · Base', desc:'Semanas 1–2: aprender el control de la pelvis.'},
+  {n:2, sessionsFrom:6, title:'Fase 2 · Suma abdomen', desc:'Semanas 3–4: se añade el dead bug.'},
+  {n:3, sessionsFrom:12, title:'Fase 3 · Suma estabilidad', desc:'Semanas 5–6: se añaden bird-dog y plancha lateral.'},
+  {n:4, sessionsFrom:18, title:'Fase 4 · Programa completo', desc:'Semana 7 en adelante: se añade la sentadilla dividida.'}
+];
+
+const REWARDS = [
+  {n:1, desc:'30 minutos más el viernes con los amigos (hasta las 12:30 en vez de las 12:00)'},
+  {n:2, desc:'2 €'},
+  {n:3, desc:'30 minutos más el viernes con los amigos (hasta las 12:30)'},
+  {n:4, desc:'2 €'},
+  {n:5, desc:'30 minutos más el viernes con los amigos (hasta las 12:30)'},
+  {n:6, desc:'2 €'}
+];
+
+/* ============ ESTADO ============ */
+const STORAGE_KEY = 'posturaNico_v1';
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return { days: {}, rewardsClaimed: 0 };
+}
+function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+let state = loadState();
+
+function todayStr(d=new Date()){
+  return d.toISOString().slice(0,10);
+}
+function dateMinus(n){
+  const d = new Date();
+  d.setDate(d.getDate()-n);
+  return todayStr(d);
+}
+
+function totalSessions(){
+  return Object.values(state.days).filter(d=>d.complete).length;
+}
+
+function currentPhase(){
+  const s = totalSessions();
+  let p = PHASES[0];
+  for(const ph of PHASES){ if(s >= ph.sessionsFrom) p = ph; }
+  return p;
+}
+
+function computeStreak(){
+  // cuenta días consecutivos hacia atrás desde hoy (o ayer si hoy aún no se ha hecho) con complete=true
+  let streak = 0;
+  let cursor = new Date();
+  // si hoy no está completo todavía, empezamos a contar desde ayer (no rompe la racha mientras quede el día)
+  if(!(state.days[todayStr(cursor)] && state.days[todayStr(cursor)].complete)){
+    cursor.setDate(cursor.getDate()-1);
+  }
+  while(state.days[todayStr(cursor)] && state.days[todayStr(cursor)].complete){
+    streak++;
+    cursor.setDate(cursor.getDate()-1);
+  }
+  return streak;
+}
+
+/* ============ ILUSTRACIONES SVG (muñeco de líneas) ============ */
+function stick(extra){
+  return `<svg viewBox="0 0 200 120" fill="none" stroke="#eaf2f8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">${extra}</svg>`;
+}
+function svgControlPelvis(){
+  return stick(`
+    <circle cx="40" cy="30" r="10" fill="#eaf2f8"/>
+    <line x1="40" y1="40" x2="60" y2="70"/>
+    <line x1="60" y1="70" x2="100" y2="70"/>
+    <line x1="100" y1="70" x2="120" y2="45"/>
+    <line x1="100" y1="70" x2="120" y2="95"/>
+    <path d="M60 70 Q80 80 100 70" stroke="#4fd1c5"/>
+    <circle cx="150" cy="30" r="10" fill="#eaf2f8"/>
+    <line x1="150" y1="40" x2="168" y2="70"/>
+    <line x1="168" y1="70" x2="128" y2="70" stroke="#f6ad55"/>
+    <path d="M168 70 Q148 62 128 70" stroke="#f6ad55"/>
+  `);
+}
+function svgFlexorCadera(){
+  return stick(`
+    <circle cx="70" cy="20" r="10" fill="#eaf2f8"/>
+    <line x1="70" y1="30" x2="80" y2="60"/>
+    <line x1="80" y1="60" x2="60" y2="100"/>
+    <line x1="60" y1="100" x2="30" y2="110"/>
+    <line x1="80" y1="60" x2="120" y2="70"/>
+    <line x1="120" y1="70" x2="140" y2="110"/>
+    <path d="M80 60 Q100 40 130 55" stroke="#4fd1c5"/>
+  `);
+}
+function svgPuente(){
+  return stick(`
+    <line x1="20" y1="100" x2="60" y2="100"/>
+    <circle cx="15" cy="95" r="9" fill="#eaf2f8"/>
+    <line x1="60" y1="100" x2="120" y2="60"/>
+    <line x1="120" y1="60" x2="150" y2="100"/>
+    <line x1="150" y1="100" x2="180" y2="100"/>
+    <path d="M60 100 Q90 20 120 60" stroke="#4fd1c5"/>
+  `);
+}
+function svgDeadBug(){
+  return stick(`
+    <circle cx="30" cy="95" r="9" fill="#eaf2f8"/>
+    <line x1="30" y1="95" x2="70" y2="95"/>
+    <line x1="70" y1="95" x2="110" y2="95"/>
+    <line x1="70" y1="95" x2="60" y2="30"/>
+    <line x1="60" y1="30" x2="20" y2="15" stroke="#4fd1c5"/>
+    <line x1="70" y1="95" x2="60" y2="55"/>
+    <line x1="60" y1="55" x2="30" y2="55"/>
+    <line x1="110" y1="95" x2="150" y2="55"/>
+    <line x1="150" y1="55" x2="180" y2="80" stroke="#f6ad55"/>
+    <line x1="110" y1="95" x2="140" y2="95"/>
+  `);
+}
+function svgBirdDog(){
+  return stick(`
+    <circle cx="150" cy="35" r="9" fill="#eaf2f8"/>
+    <line x1="150" y1="44" x2="120" y2="70"/>
+    <line x1="120" y1="70" x2="50" y2="70"/>
+    <line x1="120" y1="70" x2="130" y2="100"/>
+    <line x1="50" y1="70" x2="55" y2="100"/>
+    <line x1="120" y1="70" x2="30" y2="45" stroke="#4fd1c5"/>
+    <line x1="50" y1="70" x2="150" y2="90" stroke="#f6ad55"/>
+  `);
+}
+function svgPlanchaLateral(){
+  return stick(`
+    <circle cx="35" cy="55" r="9" fill="#eaf2f8"/>
+    <line x1="35" y1="64" x2="90" y2="64"/>
+    <line x1="90" y1="64" x2="150" y2="64"/>
+    <line x1="60" y1="90" x2="60" y2="64"/>
+    <line x1="150" y1="64" x2="150" y2="95"/>
+    <line x1="90" y1="64" x2="90" y2="95"/>
+  `);
+}
+function svgSplitSquat(){
+  return stick(`
+    <circle cx="60" cy="20" r="9" fill="#eaf2f8"/>
+    <line x1="60" y1="29" x2="65" y2="65"/>
+    <line x1="65" y1="65" x2="40" y2="90"/>
+    <line x1="40" y1="90" x2="40" y2="110"/>
+    <line x1="65" y1="65" x2="95" y2="80"/>
+    <line x1="95" y1="80" x2="90" y2="110"/>
+    <line x1="65" y1="65" x2="30" y2="55" stroke="#4fd1c5"/>
+    <line x1="30" y1="55" x2="15" y2="30" stroke="#4fd1c5"/>
+  `);
+}
+
+/* ============ RENDER ============ */
+function todayEntry(){
+  const t = todayStr();
+  if(!state.days[t]) state.days[t] = { exercises: {}, complete: false };
+  return state.days[t];
+}
+
+function visibleExercises(){
+  const ph = currentPhase().n;
+  return EXERCISES.filter(e => e.phase <= ph);
+}
+
+function renderExerciseList(){
+  const entry = todayEntry();
+  const list = document.getElementById('exerciseList');
+  list.innerHTML = '';
+  visibleExercises().forEach(ex => {
+    const done = !!entry.exercises[ex.id];
+    const card = document.createElement('div');
+    card.className = 'card' + (done ? ' done' : '');
+    card.innerHTML = `
+      <div class="card-head" onclick="toggleOpen('${ex.id}')">
+        <div class="check" onclick="event.stopPropagation(); toggleDone('${ex.id}')">${done ? '✓' : ''}</div>
+        <div class="ex-title">
+          <div class="name">${ex.name}</div>
+          <div class="reps">${ex.reps}</div>
+        </div>
+        <div class="chev">▾</div>
+      </div>
+      <div class="card-body" id="body-${ex.id}">
+        <div class="card-body-inner">
+          <div class="illus">${ex.svg()}</div>
+          <ol class="steps">${ex.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
+          ${ex.condicional ? `<div class="cond">⚠️ ${ex.condicional}</div>` : ''}
+          <div class="video-slot">🎥 (espacio para vídeo de referencia — se puede añadir un enlace aquí más adelante)</div>
+        </div>
+      </div>
+    `;
+    card.id = 'card-' + ex.id;
+    list.appendChild(card);
+  });
+
+  // ejercicios bloqueados de fases futuras, mostrados atenuados como motivación
+  const ph = currentPhase().n;
+  EXERCISES.filter(e => e.phase > ph).forEach(ex => {
+    const card = document.createElement('div');
+    card.className = 'card locked';
+    card.innerHTML = `
+      <div class="card-head">
+        <div class="check"></div>
+        <div class="ex-title">
+          <div class="name">${ex.name}</div>
+          <div class="reps">Se desbloquea en fase ${ex.phase}</div>
+        </div>
+        <div class="lock-tag">🔒</div>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+
+  updateCompleteBtn();
+}
+
+function toggleOpen(id){
+  const card = document.getElementById('card-' + id);
+  card.classList.toggle('open');
+}
+
+function toggleDone(id){
+  const entry = todayEntry();
+  entry.exercises[id] = !entry.exercises[id];
+  saveState();
+  renderExerciseList();
+}
+
+function updateCompleteBtn(){
+  const entry = todayEntry();
+  const vis = visibleExercises();
+  const allDone = vis.every(ex => entry.exercises[ex.id]);
+  const btn = document.getElementById('completeBtn');
+  if(entry.complete){
+    btn.disabled = true;
+    btn.textContent = '✓ Día completado — ¡bien hecho!';
+  } else if(allDone && vis.length){
+    btn.disabled = false;
+    btn.textContent = 'Marcar día como completado';
+  } else {
+    btn.disabled = true;
+    btn.textContent = 'Marca todos los ejercicios de hoy';
+  }
+}
+
+document.getElementById('completeBtn').addEventListener('click', () => {
+  const entry = todayEntry();
+  entry.complete = true;
+  saveState();
+  const streak = computeStreak();
+  renderAll();
+  if(streak > 0 && streak % 14 === 0){
+    showRewardModal(streak);
+  }
+});
+
+function showRewardModal(streak){
+  const idx = Math.floor(streak/14) - 1;
+  const reward = REWARDS[idx % REWARDS.length];
+  state.rewardsClaimed = Math.floor(streak/14);
+  saveState();
+  document.getElementById('rewardModalText').textContent =
+    `Nico ha completado ${streak} días seguidos. Premio: ${reward.desc}`;
+  document.getElementById('rewardModal').style.display = 'flex';
+}
+function closeModal(){ document.getElementById('rewardModal').style.display = 'none'; }
+
+function renderStats(){
+  const streak = computeStreak();
+  document.getElementById('streakNum').textContent = streak;
+  document.getElementById('totalNum').textContent = totalSessions();
+  const toNext = 14 - (streak % 14);
+  document.getElementById('nextReward').textContent = streak % 14 === 0 ? 14 : toNext;
+
+  const ph = currentPhase();
+  const phIdx = PHASES.findIndex(p => p.n === ph.n);
+  document.getElementById('phaseTitle').textContent = ph.title;
+  document.getElementById('phaseDesc').textContent = ph.desc;
+  const nextPh = PHASES[phIdx+1];
+  const span = nextPh ? (nextPh.sessionsFrom - ph.sessionsFrom) : 6;
+  const into = totalSessions() - ph.sessionsFrom;
+  const pct = nextPh ? Math.min(100, Math.round(into/span*100)) : 100;
+  document.getElementById('phaseFill').style.width = pct + '%';
+}
+
+function renderRewards(){
+  const streak = computeStreak();
+  const claimed = Math.floor(streak/14);
+  const list = document.getElementById('rewardsList');
+  list.innerHTML = REWARDS.map(r => `
+    <div class="rw ${r.n <= claimed ? 'got' : ''}">
+      <div class="n">${r.n <= claimed ? '✓' : r.n}</div>
+      <div class="desc">${r.desc}</div>
+      <div class="tag">${r.n*14} días</div>
+    </div>
+  `).join('');
+}
+
+function renderHistory(){
+  const grid = document.getElementById('histGrid');
+  grid.innerHTML = '';
+  const days = ['L','M','X','J','V','S','D'];
+  for(let i=27;i>=0;i--){
+    const ds = dateMinus(i);
+    const d = new Date(ds);
+    const done = state.days[ds] && state.days[ds].complete;
+    const cell = document.createElement('div');
+    cell.className = 'hd' + (done ? ' done' : '');
+    cell.textContent = d.getDate();
+    grid.appendChild(cell);
+  }
+}
+
+function renderAll(){
+  renderExerciseList();
+  renderStats();
+  renderRewards();
+  renderHistory();
+}
+
+/* ============ TABS ============ */
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    ['hoy','premios','historial'].forEach(v => {
+      document.getElementById('view-'+v).style.display = (v === tab.dataset.tab) ? 'block' : 'none';
+    });
+  });
+});
+
+/* ============ FECHA ============ */
+document.getElementById('dateLine').textContent =
+  new Date().toLocaleDateString('es-ES', { weekday:'long', day:'numeric', month:'long' });
+
+/* ============ SERVICE WORKER ============ */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+
+renderAll();
+</script>
+</body>
+</html>
