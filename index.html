@@ -28,9 +28,6 @@
   .stat{flex:1;background:var(--card);border-radius:16px;padding:14px 10px;text-align:center;border:1px solid var(--border);}
   .stat .num{font-size:26px;font-weight:700;color:var(--accent);}
   .stat .lbl{font-size:11px;color:var(--textdim);margin-top:2px;}
-  .daily-note{background:#2a3f2a;border:1px solid #3f5f3f;border-radius:14px;padding:12px 14px;
-    margin-bottom:18px;font-size:13px;line-height:1.5;}
-  .daily-note b{color:var(--accent2);}
   h2{font-size:15px;color:var(--textdim);text-transform:uppercase;letter-spacing:.5px;margin:22px 0 10px;}
   .card{background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:12px;overflow:hidden;}
   .card.done{border-color:var(--ok);}
@@ -111,10 +108,6 @@
       <div class="stat"><div class="num" id="streakNum">0</div><div class="lbl">días seguidos</div></div>
       <div class="stat"><div class="num" id="totalNum">0</div><div class="lbl">sesiones totales</div></div>
       <div class="stat"><div class="num" id="nextReward">14</div><div class="lbl">días p/ premio</div></div>
-    </div>
-
-    <div class="daily-note">
-      🧘 <b>Los 7 días, incluidos los 2 días sin rutina</b> — pausa de postura <b>Brügger</b>: siéntate en el borde de la silla, activa un poco abdomen y glúteo, abre el pecho, relaja hombros, 5 respiraciones. Repite 3–5 veces al día, sobre todo si llevas rato sentado. No hace falta meter tripa todo el rato, solo estar cómodo y no arqueado. Esto NO cuenta como ejercicio de la lista de abajo, es aparte.
     </div>
 
     <h2>Rutina de hoy (5 días/semana)</h2>
@@ -228,6 +221,18 @@ const EXERCISES = [
     ],
 
     video: 'https://www.youtube.com/watch?v=MEKThiUpdyc'
+  },
+  {
+    id: 'brugger',
+    name: 'Pausa de postura Brügger',
+    reps: '3–5 veces, 5 respiraciones cada vez',
+    steps: [
+      'Siéntate en el borde de la silla, pies apoyados.',
+      'Activa un poco el abdomen y los glúteos.',
+      'Abre el pecho, relaja los hombros hacia abajo.',
+      'Respira 5 veces, tranquilo.',
+      'No hace falta meter tripa todo el rato, solo estar cómodo y no arqueado.'
+    ]
   }
 ];
 
