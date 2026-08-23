@@ -111,6 +111,7 @@
     </div>
 
     <h2>Rutina de hoy (5 días/semana)</h2>
+    <div class="info" id="restDayBadge" style="display:none;margin-bottom:8px"></div>
     <div class="info" id="levelBadge" style="margin-bottom:8px"></div>
     <div class="info" style="margin-bottom:12px">
       🔬 Los estudios científicos apoyan sobre todo el <b>conjunto</b> del programa (control pélvico + puente + dead bug + bird-dog), no cada ejercicio suelto. El estiramiento de cadera no tiene evidencia directa de reducir la lordosis — se mantiene por movilidad.
@@ -450,10 +451,27 @@ function showRewardModal(weekStreak, claimedNow){
 }
 function closeModal(){ document.getElementById('rewardModal').style.display = 'none'; }
 
+// Plan sugerido de descanso: martes (entreno duro) y sábado (partido).
+// Es solo orientativo — si falla otro día, puede recuperarlo cualquier día de esa semana,
+// incluido martes o sábado, y sigue contando para las 5 sesiones semanales.
+const REST_DAYS = [2, 6]; // getDay(): 0=domingo, 1=lunes, 2=martes ... 6=sábado
+
 function renderStats(){
   const weekCount = weekSessionCount(new Date());
   const weekStreak = computeWeekStreak();
   document.getElementById('streakNum').textContent = weekCount + '/' + SESSIONS_PER_WEEK;
+
+  const restBadge = document.getElementById('restDayBadge');
+  const isRestDay = REST_DAYS.includes(new Date().getDay());
+  if(isRestDay && weekCount < SESSIONS_PER_WEEK){
+    restBadge.style.display = 'block';
+    restBadge.textContent = '😴 Hoy toca descanso (martes/sábado). Si te falta algún día de esta semana, puedes hacerlo hoy también — sigue contando.';
+  } else if(isRestDay){
+    restBadge.style.display = 'block';
+    restBadge.textContent = '😴 Hoy toca descanso — ya llevas las 5 sesiones de esta semana. 💪';
+  } else {
+    restBadge.style.display = 'none';
+  }
   document.getElementById('totalNum').textContent = totalSessions();
   const toNext = 2 - (weekStreak % 2);
   document.getElementById('nextReward').textContent = (weekStreak % 2 === 0 ? 2 : toNext) + ' sem';
