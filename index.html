@@ -111,6 +111,7 @@
     </div>
 
     <h2>Rutina de hoy (5 días/semana)</h2>
+    <div class="info" id="levelBadge" style="margin-bottom:8px"></div>
     <div class="info" style="margin-bottom:12px">
       🔬 Los estudios científicos apoyan sobre todo el <b>conjunto</b> del programa (control pélvico + puente + dead bug + bird-dog), no cada ejercicio suelto. El estiramiento de cadera no tiene evidencia directa de reducir la lordosis — se mantiene por movilidad.
     </div>
@@ -151,7 +152,7 @@ const EXERCISES = [
   {
     id: 'control_pelvis',
     name: 'Control de pelvis (tumbado)',
-    reps: '2 series × 10 repeticiones',
+    repsLevels: ['2 series × 10 repeticiones', '2 series × 12 repeticiones', '3 series × 10 repeticiones'],
     steps: [
       'Túmbate boca arriba, rodillas dobladas.',
       'Aplana la espalda baja contra el suelo. Aguanta 2 segundos.',
@@ -164,7 +165,7 @@ const EXERCISES = [
   {
     id: 'flexor_cadera',
     name: 'Estiramiento flexor de cadera',
-    reps: '2 series × 25 segundos por lado',
+    repsLevels: ['2 series × 25 segundos por lado', '2 series × 30 segundos por lado', '3 series × 30 segundos por lado'],
     condicional: 'Solo si notas la parte delantera de la cadera tensa. Si no notas nada, sáltatelo.',
     steps: [
       'Ponte de rodillas en el suelo, con una pierna.',
@@ -181,7 +182,7 @@ const EXERCISES = [
   {
     id: 'puente',
     name: 'Puente de glúteos',
-    reps: '3 series × 10 repeticiones',
+    repsLevels: ['3 series × 10 repeticiones', '3 series × 12 repeticiones', '3 series × 15 repeticiones'],
     steps: [
       'Túmbate boca arriba, rodillas dobladas, pies cerca de los glúteos.',
       'Aprieta los glúteos y sube las caderas hacia el techo.',
@@ -195,7 +196,7 @@ const EXERCISES = [
   {
     id: 'dead_bug',
     name: 'Dead bug',
-    reps: '2 series × 8 repeticiones por lado',
+    repsLevels: ['2 series × 8 repeticiones por lado', '3 series × 8 repeticiones por lado', '3 series × 10 repeticiones por lado'],
     steps: [
       'Túmbate boca arriba, brazos hacia el techo.',
       'Sube las rodillas, dobladas, como si estuvieras sentado en el aire.',
@@ -210,7 +211,7 @@ const EXERCISES = [
   {
     id: 'bird_dog',
     name: 'Bird-dog',
-    reps: '2 series × 6 repeticiones por lado',
+    repsLevels: ['2 series × 6 repeticiones por lado', '2 series × 8 repeticiones por lado', '3 series × 8 repeticiones por lado'],
     steps: [
       'Ponte a cuatro patas: manos bajo hombros, rodillas bajo caderas.',
       'Aprieta el abdomen. La espalda no se mueve.',
@@ -225,7 +226,7 @@ const EXERCISES = [
   {
     id: 'brugger',
     name: 'Pausa de postura Brügger',
-    reps: '3–5 veces, 5 respiraciones cada vez',
+    repsLevels: ['3 veces, 5 respiraciones cada vez', '4 veces, 5 respiraciones cada vez', '5 veces, 5 respiraciones cada vez'],
     steps: [
       'Siéntate en el borde de la silla, pies apoyados.',
       'Activa un poco el abdomen y los glúteos.',
@@ -271,6 +272,16 @@ function totalSessions(){
   return Object.values(state.days).filter(d=>d.complete).length;
 }
 
+// Progresión por sesiones completadas (no por calendario): nivel 0 al empezar,
+// nivel 1 tras ~2 semanas a 5 días/semana, nivel 2 tras ~4 semanas.
+function currentLevel(){
+  const s = totalSessions();
+  if(s >= 20) return 2;
+  if(s >= 10) return 1;
+  return 0;
+}
+const LEVEL_LABEL = ['Nivel 1 · inicio', 'Nivel 2 · sube un poco', 'Nivel 3 · a tope'];
+
 function computeStreak(){
   // cuenta días consecutivos hacia atrás desde hoy (o ayer si hoy aún no se ha hecho) con complete=true
   let streak = 0;
@@ -299,6 +310,7 @@ function visibleExercises(){
 
 function renderExerciseList(){
   const entry = todayEntry();
+  const level = currentLevel();
   const list = document.getElementById('exerciseList');
   list.innerHTML = '';
   visibleExercises().forEach(ex => {
@@ -310,7 +322,7 @@ function renderExerciseList(){
         <div class="check" onclick="event.stopPropagation(); toggleDone('${ex.id}')">${done ? '✓' : ''}</div>
         <div class="ex-title">
           <div class="name">${ex.name}</div>
-          <div class="reps">${ex.reps}</div>
+          <div class="reps">${ex.repsLevels[level]}</div>
         </div>
         <div class="chev">▾</div>
       </div>
@@ -405,6 +417,12 @@ function renderStats(){
   document.getElementById('totalNum').textContent = totalSessions();
   const toNext = 14 - (streak % 14);
   document.getElementById('nextReward').textContent = streak % 14 === 0 ? 14 : toNext;
+
+  const level = currentLevel();
+  const sesionesParaSubir = level === 0 ? (10 - totalSessions()) : level === 1 ? (20 - totalSessions()) : 0;
+  document.getElementById('levelBadge').textContent = level < 2
+    ? `💪 ${LEVEL_LABEL[level]} — ${sesionesParaSubir} sesiones para subir de nivel`
+    : `💪 ${LEVEL_LABEL[level]} — nivel máximo del programa`;
 }
 
 function renderRewards(){
