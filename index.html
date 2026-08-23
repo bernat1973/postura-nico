@@ -46,14 +46,13 @@
   .card-body{max-height:0;overflow:hidden;transition:max-height .25s ease;}
   .card.open .card-body{max-height:520px;}
   .card-body-inner{padding:0 14px 16px;}
-  .illus{width:100%;background:var(--card2);border-radius:12px;padding:8px 0;margin-bottom:10px;}
-  .illus svg{width:100%;height:150px;display:block;}
   .steps{margin:0;padding-left:18px;font-size:13.5px;line-height:1.6;color:var(--text);}
   .steps li{margin-bottom:4px;}
   .cond{display:inline-block;margin-top:8px;font-size:11.5px;background:#3a2f1a;color:var(--accent2);
     padding:4px 8px;border-radius:8px;}
-  .video-slot{margin-top:10px;font-size:12px;color:var(--textdim);}
-  .video-slot a{color:var(--accent);}
+  .video-link{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;
+    background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px;
+    color:var(--accent);text-decoration:none;font-size:14px;font-weight:600;}
   footer{position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:1px solid var(--border);
     padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:flex;justify-content:center;}
   .complete-btn{width:100%;max-width:520px;background:var(--accent);color:#06282a;border:none;
@@ -162,8 +161,7 @@ const EXERCISES = [
       'Busca el punto de en medio: ni aplanada ni arqueada.',
       'Repite 10 veces, despacio, respirando normal.'
     ],
-    svg: svgControlPelvis,
-    video: 'https://www.youtube.com/watch?v=DTkpChGkvNE'
+    video: 'https://www.youtube.com/watch?v=Evbq9vPrsg4'
   },
   {
     id: 'flexor_cadera',
@@ -178,7 +176,7 @@ const EXERCISES = [
       'Nota el estiramiento delante de la cadera de atrás (no en la espalda).',
       'Aguanta 25 segundos. Cambia de lado.'
     ],
-    svg: svgFlexorCadera,
+
     video: 'https://www.youtube.com/watch?v=8xZlzcMAtVQ'
   },
   {
@@ -192,7 +190,7 @@ const EXERCISES = [
       'El movimiento lo hace el glúteo, no arquees la espalda.',
       'Baja despacio. Repite.'
     ],
-    svg: svgPuente,
+
     video: 'https://www.youtube.com/watch?v=o1MCzUH1uUQ'
   },
   {
@@ -207,7 +205,7 @@ const EXERCISES = [
       'Vuelve al centro. Cambia de lado.',
       'Si la espalda se despega del suelo, baja menos.'
     ],
-    svg: svgDeadBug,
+
     video: 'https://www.youtube.com/watch?v=0JFVLaTLzHg'
   },
   {
@@ -221,7 +219,7 @@ const EXERCISES = [
       'La cadera no gira, se queda mirando al suelo.',
       'Vuelve al centro. Cambia de lado.'
     ],
-    svg: svgBirdDog,
+
     video: 'https://www.youtube.com/watch?v=MEKThiUpdyc'
   },
   {
@@ -235,7 +233,7 @@ const EXERCISES = [
       'Aprieta el abdomen. No dejes caer la cadera.',
       'Aguanta 15-20 segundos. Cambia de lado.'
     ],
-    svg: svgPlanchaLateral,
+
     video: 'https://www.youtube.com/watch?v=xAVjyugosnQ'
   },
   {
@@ -249,7 +247,7 @@ const EXERCISES = [
       'La rodilla de delante mira hacia el pie, no hacia dentro.',
       'Sube empujando el suelo con el pie de delante.'
     ],
-    svg: svgSplitSquat,
+
     video: 'https://www.youtube.com/watch?v=WHlBuTr43U8'
   }
 ];
@@ -304,130 +302,6 @@ function computeStreak(){
   return streak;
 }
 
-/* ============ ILUSTRACIONES SVG (muñeco de líneas, claras y grandes) ============ */
-const CLR_BODY = '#eaf2f8';
-const CLR_MOVE = '#4fd1c5';
-const CLR_ARROW = '#f6ad55';
-
-function stick(extra, label1, label2){
-  return `<svg viewBox="0 0 240 150" fill="none" stroke="${CLR_BODY}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
-    <defs>
-      <marker id="arrowhead" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-        <path d="M0 0 L10 5 L0 10 z" fill="${CLR_ARROW}"/>
-      </marker>
-    </defs>
-    <line x1="8" y1="140" x2="232" y2="140" stroke="#274969" stroke-width="3" stroke-dasharray="5 5"/>
-    ${extra}
-    ${label1 ? `<text x="55" y="16" font-size="13" fill="${CLR_ARROW}" font-family="sans-serif" text-anchor="middle">${label1}</text>` : ''}
-    ${label2 ? `<text x="185" y="16" font-size="13" fill="${CLR_MOVE}" font-family="sans-serif" text-anchor="middle">${label2}</text>` : ''}
-  </svg>`;
-}
-
-/* Control de pelvis: tumbado, con flecha curva mostrando el balanceo de la cadera */
-function svgControlPelvis(){
-  return stick(`
-    <circle cx="35" cy="95" r="12" fill="${CLR_BODY}"/>
-    <line x1="45" y1="103" x2="95" y2="118"/>
-    <line x1="95" y1="118" x2="150" y2="118"/>
-    <line x1="150" y1="118" x2="150" y2="80"/>
-    <line x1="150" y1="80" x2="185" y2="60"/>
-    <line x1="150" y1="118" x2="185" y2="130"/>
-    <path d="M105 90 Q120 68 140 90" stroke="${CLR_ARROW}" stroke-width="5" marker-end="url(#arrowhead)"/>
-    <path d="M140 90 Q120 108 105 90" stroke="${CLR_ARROW}" stroke-width="5" marker-end="url(#arrowhead)" opacity="0.55"/>
-    <text x="120" y="55" font-size="12" fill="${CLR_ARROW}" font-family="sans-serif" text-anchor="middle">balancea la pelvis</text>
-  `);
-}
-
-/* Estiramiento flexor de cadera: zancada arrodillada, estrella en la zona a notar */
-function svgFlexorCadera(){
-  return stick(`
-    <circle cx="150" cy="30" r="12" fill="${CLR_BODY}"/>
-    <line x1="150" y1="42" x2="145" y2="80"/>
-    <line x1="145" y1="80" x2="110" y2="100"/>
-    <line x1="110" y1="100" x2="110" y2="140"/>
-    <line x1="145" y1="80" x2="175" y2="110"/>
-    <line x1="175" y1="110" x2="175" y2="140"/>
-    <line x1="175" y1="110" x2="205" y2="140" stroke="${CLR_MOVE}"/>
-    <circle cx="128" cy="88" r="7" fill="none" stroke="${CLR_ARROW}" stroke-width="4"/>
-    <text x="60" y="95" font-size="13" fill="${CLR_ARROW}" font-family="sans-serif" text-anchor="middle">nótalo</text>
-    <text x="60" y="112" font-size="13" fill="${CLR_ARROW}" font-family="sans-serif" text-anchor="middle">aquí ↗</text>
-  `);
-}
-
-/* Puente de glúteos: dos posturas superpuestas, abajo y arriba, con flecha */
-function svgPuente(){
-  return stick(`
-    <circle cx="25" cy="128" r="11" fill="${CLR_BODY}" opacity="0.4"/>
-    <line x1="35" y1="132" x2="80" y2="136" opacity="0.4"/>
-    <path d="M80 136 L120 136 L150 100 L150 136" opacity="0.4"/>
-    <circle cx="25" cy="95" r="11" fill="${CLR_BODY}"/>
-    <line x1="35" y1="99" x2="80" y2="103"/>
-    <path d="M80 103 Q115 60 150 100"/>
-    <line x1="150" y1="100" x2="150" y2="136"/>
-    <path d="M100 118 L100 80" stroke="${CLR_ARROW}" stroke-width="6" marker-end="url(#arrowhead)"/>
-  `, null, null);
-}
-
-/* Dead bug: tumbado, un brazo y la pierna contraria bajando */
-function svgDeadBug(){
-  return stick(`
-    <circle cx="25" cy="120" r="11" fill="${CLR_BODY}"/>
-    <line x1="35" y1="122" x2="90" y2="122"/>
-    <line x1="90" y1="122" x2="140" y2="122"/>
-    <line x1="90" y1="122" x2="70" y2="35" stroke="${CLR_MOVE}"/>
-    <path d="M70 35 L55 15" stroke="${CLR_ARROW}" stroke-width="5" marker-end="url(#arrowhead)"/>
-    <line x1="90" y1="122" x2="110" y2="60"/>
-    <line x1="110" y1="60" x2="110" y2="30"/>
-    <line x1="140" y1="122" x2="175" y2="60"/>
-    <line x1="175" y1="60" x2="200" y2="30"/>
-    <path d="M140 122 L195 132" stroke="${CLR_ARROW}" stroke-width="5" marker-end="url(#arrowhead)"/>
-    <text x="30" y="140" font-size="11" fill="${CLR_ARROW}" font-family="sans-serif">espalda pegada al suelo</text>
-  `);
-}
-
-/* Bird-dog: a cuatro patas, brazo y pierna contraria estirados */
-function svgBirdDog(){
-  return stick(`
-    <circle cx="185" cy="55" r="11" fill="${CLR_BODY}"/>
-    <line x1="177" y1="64" x2="140" y2="90"/>
-    <line x1="140" y1="90" x2="70" y2="90"/>
-    <line x1="140" y1="90" x2="140" y2="140"/>
-    <line x1="70" y1="90" x2="70" y2="140"/>
-    <path d="M140 90 L30 62" stroke="${CLR_MOVE}" marker-end="url(#arrowhead)"/>
-    <path d="M70 90 L200 118" stroke="${CLR_ARROW}" marker-end="url(#arrowhead)"/>
-  `);
-}
-
-/* Plancha lateral con rodillas: apoyo en antebrazo, cuerpo en línea recta */
-function svgPlanchaLateral(){
-  return stick(`
-    <circle cx="30" cy="60" r="11" fill="${CLR_BODY}"/>
-    <line x1="30" y1="71" x2="90" y2="80"/>
-    <line x1="90" y1="80" x2="150" y2="80"/>
-    <line x1="55" y1="120" x2="55" y2="80"/>
-    <line x1="150" y1="80" x2="150" y2="120"/>
-    <line x1="90" y1="80" x2="90" y2="120"/>
-    <path d="M90 80 L90 30" stroke="${CLR_ARROW}" stroke-width="5" marker-end="url(#arrowhead)"/>
-    <text x="90" y="20" font-size="12" fill="${CLR_ARROW}" font-family="sans-serif" text-anchor="middle">cadera arriba, en línea recta</text>
-  `);
-}
-
-/* Sentadilla dividida asistida: zancada con apoyo en pared/silla y flecha de bajada */
-function svgSplitSquat(){
-  return stick(`
-    <line x1="200" y1="15" x2="200" y2="140" stroke="#274969" stroke-width="6"/>
-    <circle cx="90" cy="25" r="11" fill="${CLR_BODY}"/>
-    <line x1="90" y1="36" x2="95" y2="75"/>
-    <line x1="95" y1="60" x2="200" y2="45" stroke="${CLR_MOVE}"/>
-    <line x1="95" y1="75" x2="60" y2="105"/>
-    <line x1="60" y1="105" x2="60" y2="140"/>
-    <line x1="95" y1="75" x2="130" y2="95"/>
-    <line x1="130" y1="95" x2="120" y2="140"/>
-    <path d="M95 75 L95 105" stroke="${CLR_ARROW}" stroke-width="5" marker-end="url(#arrowhead)"/>
-    <text x="40" y="20" font-size="12" fill="${CLR_ARROW}" font-family="sans-serif">apoyo</text>
-  `);
-}
-
 /* ============ RENDER ============ */
 function todayEntry(){
   const t = todayStr();
@@ -458,10 +332,9 @@ function renderExerciseList(){
       </div>
       <div class="card-body" id="body-${ex.id}">
         <div class="card-body-inner">
-          <div class="illus">${ex.svg()}</div>
+          ${ex.video ? `<a class="video-link" href="${ex.video}" target="_blank" rel="noopener">🎥 Ver vídeo del ejercicio</a>` : ''}
           <ol class="steps">${ex.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
           ${ex.condicional ? `<div class="cond">⚠️ ${ex.condicional}</div>` : ''}
-          ${ex.video ? `<div class="video-slot">🎥 <a href="${ex.video}" target="_blank" rel="noopener">Ver vídeo de referencia</a></div>` : ''}
         </div>
       </div>
     `;
