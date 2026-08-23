@@ -28,12 +28,6 @@
   .stat{flex:1;background:var(--card);border-radius:16px;padding:14px 10px;text-align:center;border:1px solid var(--border);}
   .stat .num{font-size:26px;font-weight:700;color:var(--accent);}
   .stat .lbl{font-size:11px;color:var(--textdim);margin-top:2px;}
-  .phase-banner{background:linear-gradient(135deg,var(--card2),var(--card));border:1px solid var(--border);
-    border-radius:16px;padding:14px;margin-bottom:18px;}
-  .phase-banner .t{font-size:14px;font-weight:600;color:var(--accent2);}
-  .phase-banner .d{font-size:12px;color:var(--textdim);margin-top:4px;}
-  .progress-track{height:6px;background:var(--border);border-radius:4px;margin-top:10px;overflow:hidden;}
-  .progress-fill{height:100%;background:var(--accent);border-radius:4px;transition:width .3s;}
   .daily-note{background:#2a3f2a;border:1px solid #3f5f3f;border-radius:14px;padding:12px 14px;
     margin-bottom:18px;font-size:13px;line-height:1.5;}
   .daily-note b{color:var(--accent2);}
@@ -53,16 +47,13 @@
   .card.open .card-body{max-height:520px;}
   .card-body-inner{padding:0 14px 16px;}
   .illus{width:100%;background:var(--card2);border-radius:12px;padding:8px 0;margin-bottom:10px;}
-  .illus svg{width:100%;height:120px;display:block;}
+  .illus svg{width:100%;height:150px;display:block;}
   .steps{margin:0;padding-left:18px;font-size:13.5px;line-height:1.6;color:var(--text);}
   .steps li{margin-bottom:4px;}
   .cond{display:inline-block;margin-top:8px;font-size:11.5px;background:#3a2f1a;color:var(--accent2);
     padding:4px 8px;border-radius:8px;}
   .video-slot{margin-top:10px;font-size:12px;color:var(--textdim);}
   .video-slot a{color:var(--accent);}
-  .locked{opacity:.45;}
-  .locked .card-head{cursor:default;}
-  .lock-tag{font-size:11px;color:var(--textdim);background:var(--card2);padding:3px 8px;border-radius:8px;}
   footer{position:fixed;bottom:0;left:0;right:0;background:var(--bg);border-top:1px solid var(--border);
     padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:flex;justify-content:center;}
   .complete-btn{width:100%;max-width:520px;background:var(--accent);color:#06282a;border:none;
@@ -117,12 +108,6 @@
       <div class="stat"><div class="num" id="nextReward">14</div><div class="lbl">días p/ premio</div></div>
     </div>
 
-    <div class="phase-banner">
-      <div class="t" id="phaseTitle">Fase 1 · Base</div>
-      <div class="d" id="phaseDesc">Semanas 1–2: aprender el control de la pelvis.</div>
-      <div class="progress-track"><div class="progress-fill" id="phaseFill" style="width:0%"></div></div>
-    </div>
-
     <div class="daily-note">
       🧘 <b>Todos los días</b>, no solo días de rutina: pausa de postura <b>Brügger</b> — siéntate en el borde de la silla, activa un poco abdomen y glúteo, abre el pecho, relaja hombros, 5 respiraciones. Repite 3–5 veces al día, sobre todo si llevas rato sentado. No hace falta meter tripa todo el rato, solo estar cómodo y no arqueado.
     </div>
@@ -163,13 +148,12 @@ const EXERCISES = [
     id: 'control_pelvis',
     name: 'Control de pelvis (tumbado)',
     reps: '2 series × 10 repeticiones',
-    phase: 1,
     steps: [
-      'Túmbate boca arriba, rodillas dobladas, pies apoyados.',
-      'Mete un poco la espalda baja hacia el suelo (aplanarla) y aguanta 2 segundos.',
-      'Ahora arquea un poco la espalda baja, separándola del suelo, 2 segundos.',
-      'Busca el punto de en medio: ni aplanada ni arqueada. Ese es tu punto "neutro".',
-      'Repite el movimiento lento, con respiración normal, 10 veces.'
+      'Túmbate boca arriba, rodillas dobladas.',
+      'Aplana la espalda baja contra el suelo. Aguanta 2 segundos.',
+      'Ahora arquéala un poco, despegándola del suelo. Aguanta 2 segundos.',
+      'Busca el punto de en medio: ni aplanada ni arqueada.',
+      'Repite 10 veces, despacio, respirando normal.'
     ],
     svg: svgControlPelvis,
     video: 'https://www.youtube.com/watch?v=DTkpChGkvNE'
@@ -178,14 +162,14 @@ const EXERCISES = [
     id: 'flexor_cadera',
     name: 'Estiramiento flexor de cadera',
     reps: '2 series × 25 segundos por lado',
-    phase: 1,
-    condicional: 'Solo si notas tirantez en la parte delantera de la cadera al hacerlo. Si no notas nada, no pasa nada, sáltatelo.',
+    condicional: 'Solo si notas la parte delantera de la cadera tensa. Si no notas nada, sáltatelo.',
     steps: [
-      'Ponte en posición de zancada (una rodilla apoyada en el suelo, la otra pierna delante doblada).',
-      'Aprieta el glúteo de la pierna de atrás y empuja la cadera suavemente hacia delante.',
-      'Debes notarlo en la parte delantera de la cadera de atrás, NO en la zona lumbar.',
-      'Si notas la zona lumbar, para y coloca la pelvis más recta.',
-      'Aguanta 25 segundos, respira normal, cambia de lado.'
+      'Ponte de rodillas en el suelo, con una pierna.',
+      'La otra pierna, delante, doblada como una zancada.',
+      'Aprieta el glúteo de la pierna de atrás.',
+      'Empuja la cadera un poco hacia delante.',
+      'Nota el estiramiento delante de la cadera de atrás (no en la espalda).',
+      'Aguanta 25 segundos. Cambia de lado.'
     ],
     svg: svgFlexorCadera,
     video: 'https://www.youtube.com/watch?v=8xZlzcMAtVQ'
@@ -194,13 +178,12 @@ const EXERCISES = [
     id: 'puente',
     name: 'Puente de glúteos',
     reps: '3 series × 10 repeticiones',
-    phase: 1,
     steps: [
-      'Túmbate boca arriba, rodillas dobladas, pies apoyados cerca de los glúteos.',
-      'Aprieta abdomen y glúteos y sube las caderas hacia el techo.',
-      'Para cuando el cuerpo forme una línea recta de rodillas a hombros — no subas más.',
-      'No arquees la espalda al final, el movimiento lo hace el glúteo, no la zona lumbar.',
-      'Baja despacio y repite.'
+      'Túmbate boca arriba, rodillas dobladas, pies cerca de los glúteos.',
+      'Aprieta los glúteos y sube las caderas hacia el techo.',
+      'Para cuando el cuerpo quede en línea recta (no más arriba).',
+      'El movimiento lo hace el glúteo, no arquees la espalda.',
+      'Baja despacio. Repite.'
     ],
     svg: svgPuente,
     video: 'https://www.youtube.com/watch?v=o1MCzUH1uUQ'
@@ -209,13 +192,13 @@ const EXERCISES = [
     id: 'dead_bug',
     name: 'Dead bug',
     reps: '2 series × 8 repeticiones por lado',
-    phase: 2,
     steps: [
-      'Túmbate boca arriba, brazos hacia el techo, caderas y rodillas a 90 grados.',
-      'Aprieta el abdomen como si fueras a recibir un golpe suave en la barriga.',
-      'Baja lentamente un brazo y la pierna contraria hacia el suelo, sin que la espalda baja se despegue ni se arquee.',
-      'Vuelve al centro y cambia de lado.',
-      'Si notas que la espalda se arquea, no bajes tanto el brazo/pierna.'
+      'Túmbate boca arriba, brazos hacia el techo.',
+      'Sube las rodillas, dobladas, como si estuvieras sentado en el aire.',
+      'Aprieta el abdomen (la espalda baja no debe despegarse del suelo).',
+      'Baja despacio un brazo y la pierna contraria hacia el suelo.',
+      'Vuelve al centro. Cambia de lado.',
+      'Si la espalda se despega del suelo, baja menos.'
     ],
     svg: svgDeadBug,
     video: 'https://www.youtube.com/watch?v=0JFVLaTLzHg'
@@ -224,13 +207,12 @@ const EXERCISES = [
     id: 'bird_dog',
     name: 'Bird-dog',
     reps: '2 series × 6 repeticiones por lado',
-    phase: 3,
     steps: [
-      'Ponte a cuatro patas, manos bajo hombros, rodillas bajo caderas.',
-      'Aprieta el abdomen para que la espalda no se mueva.',
-      'Estira un brazo hacia delante y la pierna contraria hacia atrás, a la vez, despacio.',
-      'La cadera y los hombros deben quedarse quietos, sin girar.',
-      'Vuelve al centro con control y cambia de lado.'
+      'Ponte a cuatro patas: manos bajo hombros, rodillas bajo caderas.',
+      'Aprieta el abdomen. La espalda no se mueve.',
+      'Estira un brazo hacia delante y la pierna contraria hacia atrás, despacio.',
+      'La cadera no gira, se queda mirando al suelo.',
+      'Vuelve al centro. Cambia de lado.'
     ],
     svg: svgBirdDog,
     video: 'https://www.youtube.com/watch?v=MEKThiUpdyc'
@@ -239,13 +221,12 @@ const EXERCISES = [
     id: 'plancha_lateral',
     name: 'Plancha lateral con rodillas',
     reps: '2 series × 15–20 segundos por lado',
-    phase: 3,
     steps: [
-      'Túmbate de lado, apoyado en el antebrazo, rodillas dobladas hacia atrás.',
-      'Levanta la cadera del suelo, formando una línea recta entre hombro, cadera y rodillas.',
-      'Aprieta el abdomen y aguanta sin dejar caer la cadera.',
-      'Respira normal durante los segundos que aguantes.',
-      'Cambia de lado.'
+      'Túmbate de lado, apoyado en el antebrazo.',
+      'Dobla las rodillas hacia atrás.',
+      'Levanta la cadera del suelo. El cuerpo queda en línea recta.',
+      'Aprieta el abdomen. No dejes caer la cadera.',
+      'Aguanta 15-20 segundos. Cambia de lado.'
     ],
     svg: svgPlanchaLateral,
     video: 'https://www.youtube.com/watch?v=xAVjyugosnQ'
@@ -254,24 +235,16 @@ const EXERCISES = [
     id: 'split_squat',
     name: 'Sentadilla dividida asistida',
     reps: '2 series × 8 repeticiones por pierna',
-    phase: 4,
     steps: [
-      'Colócate en zancada, agarrándote a una pared o silla con una mano para el equilibrio.',
-      'Baja unos centímetros doblando ambas rodillas, manteniendo el tronco recto.',
-      'La rodilla de delante debe apuntar hacia el segundo dedo del pie, no hacia dentro.',
-      'No saques la barriga ni arquees la zona lumbar al bajar.',
+      'Ponte en zancada. Agárrate a una pared o silla con una mano.',
+      'Dobla las dos rodillas y baja unos centímetros.',
+      'El tronco se queda recto.',
+      'La rodilla de delante mira hacia el pie, no hacia dentro.',
       'Sube empujando el suelo con el pie de delante.'
     ],
     svg: svgSplitSquat,
     video: 'https://www.youtube.com/watch?v=WHlBuTr43U8'
   }
-];
-
-const PHASES = [
-  {n:1, sessionsFrom:0, title:'Fase 1 · Base', desc:'Semanas 1–2: aprender el control de la pelvis.'},
-  {n:2, sessionsFrom:6, title:'Fase 2 · Suma abdomen', desc:'Semanas 3–4: se añade el dead bug.'},
-  {n:3, sessionsFrom:12, title:'Fase 3 · Suma estabilidad', desc:'Semanas 5–6: se añaden bird-dog y plancha lateral.'},
-  {n:4, sessionsFrom:18, title:'Fase 4 · Programa completo', desc:'Semana 7 en adelante: se añade la sentadilla dividida.'}
 ];
 
 const REWARDS = [
@@ -309,13 +282,6 @@ function totalSessions(){
   return Object.values(state.days).filter(d=>d.complete).length;
 }
 
-function currentPhase(){
-  const s = totalSessions();
-  let p = PHASES[0];
-  for(const ph of PHASES){ if(s >= ph.sessionsFrom) p = ph; }
-  return p;
-}
-
 function computeStreak(){
   // cuenta días consecutivos hacia atrás desde hoy (o ayer si hoy aún no se ha hecho) con complete=true
   let streak = 0;
@@ -331,90 +297,127 @@ function computeStreak(){
   return streak;
 }
 
-/* ============ ILUSTRACIONES SVG (muñeco de líneas) ============ */
-function stick(extra){
-  return `<svg viewBox="0 0 200 120" fill="none" stroke="#eaf2f8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">${extra}</svg>`;
+/* ============ ILUSTRACIONES SVG (muñeco de líneas, claras y grandes) ============ */
+const CLR_BODY = '#eaf2f8';
+const CLR_MOVE = '#4fd1c5';
+const CLR_ARROW = '#f6ad55';
+
+function stick(extra, label1, label2){
+  return `<svg viewBox="0 0 240 150" fill="none" stroke="${CLR_BODY}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <defs>
+      <marker id="arrowhead" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="${CLR_ARROW}"/>
+      </marker>
+    </defs>
+    <line x1="8" y1="140" x2="232" y2="140" stroke="#274969" stroke-width="3" stroke-dasharray="5 5"/>
+    ${extra}
+    ${label1 ? `<text x="55" y="16" font-size="13" fill="${CLR_ARROW}" font-family="sans-serif" text-anchor="middle">${label1}</text>` : ''}
+    ${label2 ? `<text x="185" y="16" font-size="13" fill="${CLR_MOVE}" font-family="sans-serif" text-anchor="middle">${label2}</text>` : ''}
+  </svg>`;
 }
+
+/* Control de pelvis: tumbado, con flecha curva mostrando el balanceo de la cadera */
 function svgControlPelvis(){
   return stick(`
-    <circle cx="40" cy="30" r="10" fill="#eaf2f8"/>
-    <line x1="40" y1="40" x2="60" y2="70"/>
-    <line x1="60" y1="70" x2="100" y2="70"/>
-    <line x1="100" y1="70" x2="120" y2="45"/>
-    <line x1="100" y1="70" x2="120" y2="95"/>
-    <path d="M60 70 Q80 80 100 70" stroke="#4fd1c5"/>
-    <circle cx="150" cy="30" r="10" fill="#eaf2f8"/>
-    <line x1="150" y1="40" x2="168" y2="70"/>
-    <line x1="168" y1="70" x2="128" y2="70" stroke="#f6ad55"/>
-    <path d="M168 70 Q148 62 128 70" stroke="#f6ad55"/>
+    <circle cx="35" cy="95" r="12" fill="${CLR_BODY}"/>
+    <line x1="45" y1="103" x2="95" y2="118"/>
+    <line x1="95" y1="118" x2="150" y2="118"/>
+    <line x1="150" y1="118" x2="150" y2="80"/>
+    <line x1="150" y1="80" x2="185" y2="60"/>
+    <line x1="150" y1="118" x2="185" y2="130"/>
+    <path d="M105 90 Q120 68 140 90" stroke="${CLR_ARROW}" stroke-width="5" marker-end="url(#arrowhead)"/>
+    <path d="M140 90 Q120 108 105 90" stroke="${CLR_ARROW}" stroke-width="5" marker-end="url(#arrowhead)" opacity="0.55"/>
+    <text x="120" y="55" font-size="12" fill="${CLR_ARROW}" font-family="sans-serif" text-anchor="middle">balancea la pelvis</text>
   `);
 }
+
+/* Estiramiento flexor de cadera: zancada arrodillada, estrella en la zona a notar */
 function svgFlexorCadera(){
   return stick(`
-    <circle cx="70" cy="20" r="10" fill="#eaf2f8"/>
-    <line x1="70" y1="30" x2="80" y2="60"/>
-    <line x1="80" y1="60" x2="60" y2="100"/>
-    <line x1="60" y1="100" x2="30" y2="110"/>
-    <line x1="80" y1="60" x2="120" y2="70"/>
-    <line x1="120" y1="70" x2="140" y2="110"/>
-    <path d="M80 60 Q100 40 130 55" stroke="#4fd1c5"/>
+    <circle cx="150" cy="30" r="12" fill="${CLR_BODY}"/>
+    <line x1="150" y1="42" x2="145" y2="80"/>
+    <line x1="145" y1="80" x2="110" y2="100"/>
+    <line x1="110" y1="100" x2="110" y2="140"/>
+    <line x1="145" y1="80" x2="175" y2="110"/>
+    <line x1="175" y1="110" x2="175" y2="140"/>
+    <line x1="175" y1="110" x2="205" y2="140" stroke="${CLR_MOVE}"/>
+    <circle cx="128" cy="88" r="7" fill="none" stroke="${CLR_ARROW}" stroke-width="4"/>
+    <text x="60" y="95" font-size="13" fill="${CLR_ARROW}" font-family="sans-serif" text-anchor="middle">nótalo</text>
+    <text x="60" y="112" font-size="13" fill="${CLR_ARROW}" font-family="sans-serif" text-anchor="middle">aquí ↗</text>
   `);
 }
+
+/* Puente de glúteos: dos posturas superpuestas, abajo y arriba, con flecha */
 function svgPuente(){
   return stick(`
-    <line x1="20" y1="100" x2="60" y2="100"/>
-    <circle cx="15" cy="95" r="9" fill="#eaf2f8"/>
-    <line x1="60" y1="100" x2="120" y2="60"/>
-    <line x1="120" y1="60" x2="150" y2="100"/>
-    <line x1="150" y1="100" x2="180" y2="100"/>
-    <path d="M60 100 Q90 20 120 60" stroke="#4fd1c5"/>
-  `);
+    <circle cx="25" cy="128" r="11" fill="${CLR_BODY}" opacity="0.4"/>
+    <line x1="35" y1="132" x2="80" y2="136" opacity="0.4"/>
+    <path d="M80 136 L120 136 L150 100 L150 136" opacity="0.4"/>
+    <circle cx="25" cy="95" r="11" fill="${CLR_BODY}"/>
+    <line x1="35" y1="99" x2="80" y2="103"/>
+    <path d="M80 103 Q115 60 150 100"/>
+    <line x1="150" y1="100" x2="150" y2="136"/>
+    <path d="M100 118 L100 80" stroke="${CLR_ARROW}" stroke-width="6" marker-end="url(#arrowhead)"/>
+  `, null, null);
 }
+
+/* Dead bug: tumbado, un brazo y la pierna contraria bajando */
 function svgDeadBug(){
   return stick(`
-    <circle cx="30" cy="95" r="9" fill="#eaf2f8"/>
-    <line x1="30" y1="95" x2="70" y2="95"/>
-    <line x1="70" y1="95" x2="110" y2="95"/>
-    <line x1="70" y1="95" x2="60" y2="30"/>
-    <line x1="60" y1="30" x2="20" y2="15" stroke="#4fd1c5"/>
-    <line x1="70" y1="95" x2="60" y2="55"/>
-    <line x1="60" y1="55" x2="30" y2="55"/>
-    <line x1="110" y1="95" x2="150" y2="55"/>
-    <line x1="150" y1="55" x2="180" y2="80" stroke="#f6ad55"/>
-    <line x1="110" y1="95" x2="140" y2="95"/>
+    <circle cx="25" cy="120" r="11" fill="${CLR_BODY}"/>
+    <line x1="35" y1="122" x2="90" y2="122"/>
+    <line x1="90" y1="122" x2="140" y2="122"/>
+    <line x1="90" y1="122" x2="70" y2="35" stroke="${CLR_MOVE}"/>
+    <path d="M70 35 L55 15" stroke="${CLR_ARROW}" stroke-width="5" marker-end="url(#arrowhead)"/>
+    <line x1="90" y1="122" x2="110" y2="60"/>
+    <line x1="110" y1="60" x2="110" y2="30"/>
+    <line x1="140" y1="122" x2="175" y2="60"/>
+    <line x1="175" y1="60" x2="200" y2="30"/>
+    <path d="M140 122 L195 132" stroke="${CLR_ARROW}" stroke-width="5" marker-end="url(#arrowhead)"/>
+    <text x="30" y="140" font-size="11" fill="${CLR_ARROW}" font-family="sans-serif">espalda pegada al suelo</text>
   `);
 }
+
+/* Bird-dog: a cuatro patas, brazo y pierna contraria estirados */
 function svgBirdDog(){
   return stick(`
-    <circle cx="150" cy="35" r="9" fill="#eaf2f8"/>
-    <line x1="150" y1="44" x2="120" y2="70"/>
-    <line x1="120" y1="70" x2="50" y2="70"/>
-    <line x1="120" y1="70" x2="130" y2="100"/>
-    <line x1="50" y1="70" x2="55" y2="100"/>
-    <line x1="120" y1="70" x2="30" y2="45" stroke="#4fd1c5"/>
-    <line x1="50" y1="70" x2="150" y2="90" stroke="#f6ad55"/>
+    <circle cx="185" cy="55" r="11" fill="${CLR_BODY}"/>
+    <line x1="177" y1="64" x2="140" y2="90"/>
+    <line x1="140" y1="90" x2="70" y2="90"/>
+    <line x1="140" y1="90" x2="140" y2="140"/>
+    <line x1="70" y1="90" x2="70" y2="140"/>
+    <path d="M140 90 L30 62" stroke="${CLR_MOVE}" marker-end="url(#arrowhead)"/>
+    <path d="M70 90 L200 118" stroke="${CLR_ARROW}" marker-end="url(#arrowhead)"/>
   `);
 }
+
+/* Plancha lateral con rodillas: apoyo en antebrazo, cuerpo en línea recta */
 function svgPlanchaLateral(){
   return stick(`
-    <circle cx="35" cy="55" r="9" fill="#eaf2f8"/>
-    <line x1="35" y1="64" x2="90" y2="64"/>
-    <line x1="90" y1="64" x2="150" y2="64"/>
-    <line x1="60" y1="90" x2="60" y2="64"/>
-    <line x1="150" y1="64" x2="150" y2="95"/>
-    <line x1="90" y1="64" x2="90" y2="95"/>
+    <circle cx="30" cy="60" r="11" fill="${CLR_BODY}"/>
+    <line x1="30" y1="71" x2="90" y2="80"/>
+    <line x1="90" y1="80" x2="150" y2="80"/>
+    <line x1="55" y1="120" x2="55" y2="80"/>
+    <line x1="150" y1="80" x2="150" y2="120"/>
+    <line x1="90" y1="80" x2="90" y2="120"/>
+    <path d="M90 80 L90 30" stroke="${CLR_ARROW}" stroke-width="5" marker-end="url(#arrowhead)"/>
+    <text x="90" y="20" font-size="12" fill="${CLR_ARROW}" font-family="sans-serif" text-anchor="middle">cadera arriba, en línea recta</text>
   `);
 }
+
+/* Sentadilla dividida asistida: zancada con apoyo en pared/silla y flecha de bajada */
 function svgSplitSquat(){
   return stick(`
-    <circle cx="60" cy="20" r="9" fill="#eaf2f8"/>
-    <line x1="60" y1="29" x2="65" y2="65"/>
-    <line x1="65" y1="65" x2="40" y2="90"/>
-    <line x1="40" y1="90" x2="40" y2="110"/>
-    <line x1="65" y1="65" x2="95" y2="80"/>
-    <line x1="95" y1="80" x2="90" y2="110"/>
-    <line x1="65" y1="65" x2="30" y2="55" stroke="#4fd1c5"/>
-    <line x1="30" y1="55" x2="15" y2="30" stroke="#4fd1c5"/>
+    <line x1="200" y1="15" x2="200" y2="140" stroke="#274969" stroke-width="6"/>
+    <circle cx="90" cy="25" r="11" fill="${CLR_BODY}"/>
+    <line x1="90" y1="36" x2="95" y2="75"/>
+    <line x1="95" y1="60" x2="200" y2="45" stroke="${CLR_MOVE}"/>
+    <line x1="95" y1="75" x2="60" y2="105"/>
+    <line x1="60" y1="105" x2="60" y2="140"/>
+    <line x1="95" y1="75" x2="130" y2="95"/>
+    <line x1="130" y1="95" x2="120" y2="140"/>
+    <path d="M95 75 L95 105" stroke="${CLR_ARROW}" stroke-width="5" marker-end="url(#arrowhead)"/>
+    <text x="40" y="20" font-size="12" fill="${CLR_ARROW}" font-family="sans-serif">apoyo</text>
   `);
 }
 
@@ -426,8 +429,7 @@ function todayEntry(){
 }
 
 function visibleExercises(){
-  const ph = currentPhase().n;
-  return EXERCISES.filter(e => e.phase <= ph);
+  return EXERCISES;
 }
 
 function renderExerciseList(){
@@ -457,24 +459,6 @@ function renderExerciseList(){
       </div>
     `;
     card.id = 'card-' + ex.id;
-    list.appendChild(card);
-  });
-
-  // ejercicios bloqueados de fases futuras, mostrados atenuados como motivación
-  const ph = currentPhase().n;
-  EXERCISES.filter(e => e.phase > ph).forEach(ex => {
-    const card = document.createElement('div');
-    card.className = 'card locked';
-    card.innerHTML = `
-      <div class="card-head">
-        <div class="check"></div>
-        <div class="ex-title">
-          <div class="name">${ex.name}</div>
-          <div class="reps">Se desbloquea en fase ${ex.phase}</div>
-        </div>
-        <div class="lock-tag">🔒</div>
-      </div>
-    `;
     list.appendChild(card);
   });
 
@@ -538,16 +522,6 @@ function renderStats(){
   document.getElementById('totalNum').textContent = totalSessions();
   const toNext = 14 - (streak % 14);
   document.getElementById('nextReward').textContent = streak % 14 === 0 ? 14 : toNext;
-
-  const ph = currentPhase();
-  const phIdx = PHASES.findIndex(p => p.n === ph.n);
-  document.getElementById('phaseTitle').textContent = ph.title;
-  document.getElementById('phaseDesc').textContent = ph.desc;
-  const nextPh = PHASES[phIdx+1];
-  const span = nextPh ? (nextPh.sessionsFrom - ph.sessionsFrom) : 6;
-  const into = totalSessions() - ph.sessionsFrom;
-  const pct = nextPh ? Math.min(100, Math.round(into/span*100)) : 100;
-  document.getElementById('phaseFill').style.width = pct + '%';
 }
 
 function renderRewards(){
