@@ -171,7 +171,8 @@ const EXERCISES = [
       'Busca el punto de en medio: ni aplanada ni arqueada. Ese es tu punto "neutro".',
       'Repite el movimiento lento, con respiración normal, 10 veces.'
     ],
-    svg: svgControlPelvis
+    svg: svgControlPelvis,
+    video: 'https://www.youtube.com/watch?v=DTkpChGkvNE'
   },
   {
     id: 'flexor_cadera',
@@ -186,7 +187,8 @@ const EXERCISES = [
       'Si notas la zona lumbar, para y coloca la pelvis más recta.',
       'Aguanta 25 segundos, respira normal, cambia de lado.'
     ],
-    svg: svgFlexorCadera
+    svg: svgFlexorCadera,
+    video: 'https://www.youtube.com/watch?v=8xZlzcMAtVQ'
   },
   {
     id: 'puente',
@@ -200,7 +202,8 @@ const EXERCISES = [
       'No arquees la espalda al final, el movimiento lo hace el glúteo, no la zona lumbar.',
       'Baja despacio y repite.'
     ],
-    svg: svgPuente
+    svg: svgPuente,
+    video: 'https://www.youtube.com/watch?v=o1MCzUH1uUQ'
   },
   {
     id: 'dead_bug',
@@ -214,7 +217,8 @@ const EXERCISES = [
       'Vuelve al centro y cambia de lado.',
       'Si notas que la espalda se arquea, no bajes tanto el brazo/pierna.'
     ],
-    svg: svgDeadBug
+    svg: svgDeadBug,
+    video: 'https://www.youtube.com/watch?v=0JFVLaTLzHg'
   },
   {
     id: 'bird_dog',
@@ -228,7 +232,8 @@ const EXERCISES = [
       'La cadera y los hombros deben quedarse quietos, sin girar.',
       'Vuelve al centro con control y cambia de lado.'
     ],
-    svg: svgBirdDog
+    svg: svgBirdDog,
+    video: 'https://www.youtube.com/watch?v=MEKThiUpdyc'
   },
   {
     id: 'plancha_lateral',
@@ -242,7 +247,8 @@ const EXERCISES = [
       'Respira normal durante los segundos que aguantes.',
       'Cambia de lado.'
     ],
-    svg: svgPlanchaLateral
+    svg: svgPlanchaLateral,
+    video: 'https://www.youtube.com/watch?v=xAVjyugosnQ'
   },
   {
     id: 'split_squat',
@@ -256,7 +262,8 @@ const EXERCISES = [
       'No saques la barriga ni arquees la zona lumbar al bajar.',
       'Sube empujando el suelo con el pie de delante.'
     ],
-    svg: svgSplitSquat
+    svg: svgSplitSquat,
+    video: 'https://www.youtube.com/watch?v=WHlBuTr43U8'
   }
 ];
 
@@ -445,7 +452,7 @@ function renderExerciseList(){
           <div class="illus">${ex.svg()}</div>
           <ol class="steps">${ex.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
           ${ex.condicional ? `<div class="cond">⚠️ ${ex.condicional}</div>` : ''}
-          <div class="video-slot">🎥 (espacio para vídeo de referencia — se puede añadir un enlace aquí más adelante)</div>
+          ${ex.video ? `<div class="video-slot">🎥 <a href="${ex.video}" target="_blank" rel="noopener">Ver vídeo de referencia</a></div>` : ''}
         </div>
       </div>
     `;
