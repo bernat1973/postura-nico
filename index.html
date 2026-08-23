@@ -18,7 +18,7 @@
   html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
     font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Segoe UI,Roboto,sans-serif;
     min-height:100vh; overscroll-behavior-y:none;}
-  body{padding-bottom:90px;}
+  body{padding-bottom:calc(160px + env(safe-area-inset-bottom));}
   header{position:sticky;top:0;z-index:10;background:var(--bg);padding:16px 16px 8px;
     border-bottom:1px solid var(--border);}
   h1{font-size:22px;margin:0 0 4px;}
@@ -50,6 +50,8 @@
   .steps li{margin-bottom:4px;}
   .cond{display:inline-block;margin-top:8px;font-size:11.5px;background:#3a2f1a;color:var(--accent2);
     padding:4px 8px;border-radius:8px;}
+  .info{display:block;margin-top:8px;font-size:11.5px;background:#1a2f3a;color:#7fc4e8;
+    padding:6px 10px;border-radius:8px;line-height:1.4;}
   .video-link{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;
     background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:12px;
     color:var(--accent);text-decoration:none;font-size:14px;font-weight:600;}
@@ -116,6 +118,9 @@
     </div>
 
     <h2>Rutina de hoy (5–6 días/semana)</h2>
+    <div class="info" style="margin-bottom:12px">
+      🔬 Los estudios científicos apoyan sobre todo el <b>conjunto</b> del programa (control pélvico + puente + dead bug + bird-dog), no cada ejercicio suelto. El estiramiento de cadera, la plancha lateral y la sentadilla dividida no tienen evidencia directa de reducir la lordosis — se mantienen por movilidad y por transferencia al fútbol.
+    </div>
     <div id="exerciseList"></div>
 
   </div>
@@ -141,7 +146,7 @@
 <div class="modal-bg" id="rewardModal" style="display:none">
   <div class="modal">
     <div class="emoji">🏆</div>
-    <h3>¡14 días seguidos!</h3>
+    <h3 id="rewardModalTitle">¡14 días seguidos!</h3>
     <p id="rewardModalText"></p>
     <button onclick="closeModal()">Genial</button>
   </div>
@@ -176,6 +181,7 @@ const EXERCISES = [
       'Nota el estiramiento delante de la cadera de atrás (no en la espalda).',
       'Aguanta 25 segundos. Cambia de lado.'
     ],
+    evidenceNote: 'La evidencia científica sobre si estirar el flexor de cadera reduce la lordosis es floja y contradictoria. Se mantiene por movilidad, no como corrector.',
 
     video: 'https://www.youtube.com/watch?v=8xZlzcMAtVQ'
   },
@@ -217,6 +223,7 @@ const EXERCISES = [
       'Aprieta el abdomen. La espalda no se mueve.',
       'Estira un brazo hacia delante y la pierna contraria hacia atrás, despacio.',
       'La cadera no gira, se queda mirando al suelo.',
+      'Ojo: no arquees la espalda baja al estirar la pierna. Si se arquea, sube menos la pierna.',
       'Vuelve al centro. Cambia de lado.'
     ],
 
@@ -233,6 +240,7 @@ const EXERCISES = [
       'Aprieta el abdomen. No dejes caer la cadera.',
       'Aguanta 15-20 segundos. Cambia de lado.'
     ],
+    evidenceNote: 'No hay estudios que demuestren que la plancha lateral reduzca la lordosis lumbar. Se mantiene por estabilidad de tronco útil en el fútbol (cambios de dirección, duelos), no como corrector de postura.',
 
     video: 'https://www.youtube.com/watch?v=xAVjyugosnQ'
   },
@@ -247,6 +255,7 @@ const EXERCISES = [
       'La rodilla de delante mira hacia el pie, no hacia dentro.',
       'Sube empujando el suelo con el pie de delante.'
     ],
+    evidenceNote: 'No hay estudios que demuestren que este ejercicio reduzca la lordosis. Se mantiene por fuerza de una pierna, útil para frenar y chutar en el fútbol, no como corrector de postura.',
 
     video: 'https://www.youtube.com/watch?v=WHlBuTr43U8'
   }
@@ -275,7 +284,7 @@ function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); 
 let state = loadState();
 
 function todayStr(d=new Date()){
-  return d.toISOString().slice(0,10);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
 }
 function dateMinus(n){
   const d = new Date();
@@ -335,6 +344,7 @@ function renderExerciseList(){
           ${ex.video ? `<a class="video-link" href="${ex.video}" target="_blank" rel="noopener">🎥 Ver vídeo del ejercicio</a>` : ''}
           <ol class="steps">${ex.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
           ${ex.condicional ? `<div class="cond">⚠️ ${ex.condicional}</div>` : ''}
+          ${ex.evidenceNote ? `<div class="info">🔬 ${ex.evidenceNote}</div>` : ''}
         </div>
       </div>
     `;
@@ -360,7 +370,9 @@ function toggleDone(id){
 function updateCompleteBtn(){
   const entry = todayEntry();
   const vis = visibleExercises();
-  const allDone = vis.every(ex => entry.exercises[ex.id]);
+  // los ejercicios condicionales (ej. estiramiento de cadera) no son obligatorios para completar el día
+  const required = vis.filter(ex => !ex.condicional);
+  const allDone = required.every(ex => entry.exercises[ex.id]);
   const btn = document.getElementById('completeBtn');
   const waBtn = document.getElementById('waBtn');
   if(entry.complete){
@@ -405,6 +417,7 @@ function showRewardModal(streak){
   const reward = REWARDS[idx % REWARDS.length];
   state.rewardsClaimed = Math.floor(streak/14);
   saveState();
+  document.getElementById('rewardModalTitle').textContent = `¡${streak} días seguidos!`;
   document.getElementById('rewardModalText').textContent =
     `Nico ha completado ${streak} días seguidos. Premio: ${reward.desc}`;
   document.getElementById('rewardModal').style.display = 'flex';
