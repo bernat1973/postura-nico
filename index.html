@@ -115,6 +115,9 @@
     <div class="info" style="margin-bottom:12px">
       🔬 Los estudios científicos apoyan sobre todo el <b>conjunto</b> del programa (control pélvico + puente + dead bug + bird-dog), no cada ejercicio suelto. El estiramiento de cadera no tiene evidencia directa de reducir la lordosis — se mantiene por movilidad.
     </div>
+    <div class="info" style="margin-bottom:12px">
+      📏 <b>Nico está a punto del estirón.</b> Durante el estirón el hueso crece más rápido que los músculos y tendones, así que es normal notar más tirantez en cadera e isquiotibiales — el estiramiento de cadera puede pasar a ser necesario aunque ahora no lo sea. También aumenta el riesgo de sobrecarga en rodilla, talón e ingle (dolor por tracción en el hueso en crecimiento). Si aparece dolor (no solo tirantez) en rodilla, talón o ingle, parar y consultar, no forzar.
+    </div>
     <div id="exerciseList"></div>
 
   </div>
@@ -273,12 +276,17 @@ function totalSessions(){
 }
 
 // Progresión por sesiones completadas (no por calendario): nivel 0 al empezar,
-// nivel 1 tras ~2 semanas a 5 días/semana, nivel 2 tras ~4 semanas.
+// nivel 1 tras ~2 semanas a 5 días/semana, nivel 2 tras ~4 semanas, mantenimiento tras ~6 semanas.
+// No hay protocolo de mantenimiento validado en la bibliografía (vacío reconocido por los propios
+// meta-análisis) — se sigue el principio general: mismo volumen, menos frecuencia semanal.
 function currentLevel(){
   const s = totalSessions();
   if(s >= 20) return 2;
   if(s >= 10) return 1;
   return 0;
+}
+function isMaintenance(){
+  return totalSessions() >= 30;
 }
 const LEVEL_LABEL = ['Nivel 1 · inicio', 'Nivel 2 · sube un poco', 'Nivel 3 · a tope'];
 
@@ -420,9 +428,16 @@ function renderStats(){
 
   const level = currentLevel();
   const sesionesParaSubir = level === 0 ? (10 - totalSessions()) : level === 1 ? (20 - totalSessions()) : 0;
-  document.getElementById('levelBadge').textContent = level < 2
-    ? `💪 ${LEVEL_LABEL[level]} — ${sesionesParaSubir} sesiones para subir de nivel`
-    : `💪 ${LEVEL_LABEL[level]} — nivel máximo del programa`;
+  if(isMaintenance()){
+    document.getElementById('levelBadge').textContent =
+      `💪 Mantenimiento — mismas reps del Nivel 3, ya puedes bajar a 2-3 días/semana`;
+  } else if(level < 2){
+    document.getElementById('levelBadge').textContent =
+      `💪 ${LEVEL_LABEL[level]} — ${sesionesParaSubir} sesiones para subir de nivel`;
+  } else {
+    document.getElementById('levelBadge').textContent =
+      `💪 ${LEVEL_LABEL[level]} — ${30 - totalSessions()} sesiones para pasar a mantenimiento`;
+  }
 }
 
 function renderRewards(){
