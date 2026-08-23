@@ -59,6 +59,10 @@
   .complete-btn{width:100%;max-width:520px;background:var(--accent);color:#06282a;border:none;
     padding:14px;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;}
   .complete-btn:disabled{background:var(--border);color:var(--textdim);}
+  .wa-btn{width:100%;max-width:520px;background:#25D366;color:#06280f;border:none;
+    padding:12px;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px;
+    display:none;align-items:center;justify-content:center;gap:6px;}
+  .footer-inner{display:flex;flex-direction:column;width:100%;max-width:520px;}
   .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;
     z-index:50;padding:20px;}
   .modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:26px 22px;
@@ -129,7 +133,10 @@
 </main>
 
 <footer>
-  <button class="complete-btn" id="completeBtn" disabled>Marca los ejercicios de hoy</button>
+  <div class="footer-inner">
+    <button class="complete-btn" id="completeBtn" disabled>Marca los ejercicios de hoy</button>
+    <button class="wa-btn" id="waBtn" onclick="sendWA()">📲 Enviar a papá por WhatsApp</button>
+  </div>
 </footer>
 
 <div class="modal-bg" id="rewardModal" style="display:none">
@@ -482,16 +489,31 @@ function updateCompleteBtn(){
   const vis = visibleExercises();
   const allDone = vis.every(ex => entry.exercises[ex.id]);
   const btn = document.getElementById('completeBtn');
+  const waBtn = document.getElementById('waBtn');
   if(entry.complete){
     btn.disabled = true;
     btn.textContent = '✓ Día completado — ¡bien hecho!';
+    waBtn.style.display = 'flex';
   } else if(allDone && vis.length){
     btn.disabled = false;
     btn.textContent = 'Marcar día como completado';
+    waBtn.style.display = 'none';
   } else {
     btn.disabled = true;
     btn.textContent = 'Marca todos los ejercicios de hoy';
+    waBtn.style.display = 'none';
   }
+}
+
+function sendWA(){
+  const streak = computeStreak();
+  const fecha = new Date().toLocaleDateString('es-ES', { day:'numeric', month:'long' });
+  const lines = [
+    'Postura Nico — ' + fecha,
+    '✅ Ejercicios de hoy hechos',
+    'Racha: ' + streak + ' día' + (streak !== 1 ? 's' : '') + ' seguidos'
+  ];
+  window.open('https://wa.me/?text=' + encodeURIComponent(lines.join('\n')), '_blank');
 }
 
 document.getElementById('completeBtn').addEventListener('click', () => {
