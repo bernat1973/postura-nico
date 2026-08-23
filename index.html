@@ -87,6 +87,10 @@
   .hd{aspect-ratio:1;border-radius:8px;background:var(--card2);display:flex;align-items:center;
     justify-content:center;font-size:10px;color:var(--textdim);}
   .hd.done{background:var(--ok);color:#06280f;font-weight:700;}
+  .hd.rest{background:none;color:var(--textdim);border:1px dashed var(--border);}
+  .hd.today{box-shadow:0 0 0 2px var(--accent) inset;}
+  .hd.future{opacity:0.35;}
+  .hd-label{text-align:center;font-size:10px;color:var(--textdim);font-weight:600;}
 </style>
 </head>
 <body>
@@ -505,13 +509,33 @@ function renderRewards(){
 function renderHistory(){
   const grid = document.getElementById('histGrid');
   grid.innerHTML = '';
-  const days = ['L','M','X','J','V','S','D'];
-  for(let i=27;i>=0;i--){
-    const ds = dateMinus(i);
-    const d = new Date(ds);
+  const dayLetters = ['L','M','X','J','V','S','D'];
+  dayLetters.forEach(l => {
+    const h = document.createElement('div');
+    h.className = 'hd-label';
+    h.textContent = l;
+    grid.appendChild(h);
+  });
+
+  const todayKey = todayStr(new Date());
+  const monday = new Date(mondayKey(new Date()) + 'T00:00:00');
+  const start = new Date(monday);
+  start.setDate(start.getDate() - 21); // 4 semanas: 3 semanas antes + la semana actual
+
+  for(let i=0; i<28; i++){
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    const ds = todayStr(d);
     const done = state.days[ds] && state.days[ds].complete;
+    const isFuture = ds > todayKey;
+    const isRest = REST_DAYS.includes(d.getDay());
     const cell = document.createElement('div');
-    cell.className = 'hd' + (done ? ' done' : '');
+    let cls = 'hd';
+    if(done) cls += ' done';
+    else if(isRest && !isFuture) cls += ' rest';
+    if(ds === todayKey) cls += ' today';
+    if(isFuture) cls += ' future';
+    cell.className = cls;
     cell.textContent = d.getDate();
     grid.appendChild(cell);
   }
