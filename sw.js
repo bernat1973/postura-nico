@@ -1,4 +1,4 @@
-const CACHE = 'postura-nico-v8';
+const CACHE = 'postura-nico-v9';
 const FILES = ['./index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

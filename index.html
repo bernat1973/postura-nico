@@ -105,9 +105,9 @@
 
   <div id="view-hoy">
     <div class="stats">
-      <div class="stat"><div class="num" id="streakNum">0</div><div class="lbl">días seguidos</div></div>
+      <div class="stat"><div class="num" id="streakNum">0/5</div><div class="lbl">esta semana</div></div>
       <div class="stat"><div class="num" id="totalNum">0</div><div class="lbl">sesiones totales</div></div>
-      <div class="stat"><div class="num" id="nextReward">14</div><div class="lbl">días p/ premio</div></div>
+      <div class="stat"><div class="num" id="nextReward">2 sem</div><div class="lbl">p/ premio</div></div>
     </div>
 
     <h2>Rutina de hoy (5 días/semana)</h2>
@@ -120,7 +120,7 @@
   </div>
 
   <div id="view-premios" style="display:none">
-    <h2>Racha de premios (cada 14 días seguidos)</h2>
+    <h2>Racha de premios (cada 2 semanas completas seguidas, 5 sesiones/semana)</h2>
     <div class="rewards-list" id="rewardsList"></div>
   </div>
 
@@ -140,7 +140,7 @@
 <div class="modal-bg" id="rewardModal" style="display:none">
   <div class="modal">
     <div class="emoji">🏆</div>
-    <h3 id="rewardModalTitle">¡14 días seguidos!</h3>
+    <h3 id="rewardModalTitle">¡2 semanas completas seguidas!</h3>
     <p id="rewardModalText"></p>
     <button onclick="closeModal()">Genial</button>
   </div>
@@ -287,17 +287,48 @@ function isMaintenance(){
 }
 const LEVEL_LABEL = ['Nivel 1 · inicio', 'Nivel 2 · sube un poco', 'Nivel 3 · a tope'];
 
-function computeStreak(){
-  // cuenta días consecutivos hacia atrás desde hoy (o ayer si hoy aún no se ha hecho) con complete=true
+const SESSIONS_PER_WEEK = 5;
+
+// Lunes de la semana (local) a la que pertenece una fecha, como clave "YYYY-MM-DD"
+function mondayKey(d){
+  const day = (d.getDay() + 6) % 7; // lunes=0 ... domingo=6
+  const monday = new Date(d);
+  monday.setDate(d.getDate() - day);
+  return todayStr(monday);
+}
+
+// nº de sesiones completadas en la semana (lunes-domingo) a la que pertenece la fecha
+function weekSessionCount(d){
+  const wk = mondayKey(d);
+  let count = 0;
+  for(const [dateStr, entry] of Object.entries(state.days)){
+    if(!entry.complete) continue;
+    if(mondayKey(new Date(dateStr + 'T00:00:00')) === wk) count++;
+  }
+  return count;
+}
+
+// nº de semanas completas (5 sesiones) seguidas hacia atrás, sin cortes.
+// La semana actual cuenta en cuanto llega a 5, aunque no haya terminado todavía;
+// si aún no ha terminado y no llega a 5, no cuenta pero tampoco rompe la racha (queda pendiente).
+function computeWeekStreak(){
   let streak = 0;
   let cursor = new Date();
-  // si hoy no está completo todavía, empezamos a contar desde ayer (no rompe la racha mientras quede el día)
-  if(!(state.days[todayStr(cursor)] && state.days[todayStr(cursor)].complete)){
-    cursor.setDate(cursor.getDate()-1);
-  }
-  while(state.days[todayStr(cursor)] && state.days[todayStr(cursor)].complete){
-    streak++;
-    cursor.setDate(cursor.getDate()-1);
+  const today = new Date();
+  for(let i=0; i<520; i++){ // tope de seguridad ~10 años de semanas
+    const wk = mondayKey(cursor);
+    const sunday = new Date(wk + 'T00:00:00');
+    sunday.setDate(sunday.getDate() + 6);
+    const weekEnded = sunday < new Date(todayStr(today) + 'T00:00:00');
+    const count = weekSessionCount(cursor);
+    if(count >= SESSIONS_PER_WEEK){
+      streak++;
+    } else if(!weekEnded){
+      // semana en curso, todavía puede completarse: no cuenta ni rompe
+    } else {
+      break; // semana ya terminada sin llegar a 5: racha rota
+    }
+    cursor.setDate(cursor.getDate() - 7);
   }
   return streak;
 }
@@ -383,12 +414,14 @@ function updateCompleteBtn(){
 }
 
 function sendWA(){
-  const streak = computeStreak();
+  const weekCount = weekSessionCount(new Date());
+  const weekStreak = computeWeekStreak();
   const fecha = new Date().toLocaleDateString('es-ES', { day:'numeric', month:'long' });
   const lines = [
     'Postura Nico — ' + fecha,
     '✅ Ejercicios de hoy hechos',
-    'Racha: ' + streak + ' día' + (streak !== 1 ? 's' : '') + ' seguidos'
+    'Esta semana: ' + weekCount + '/' + SESSIONS_PER_WEEK + ' sesiones',
+    'Semanas completas seguidas: ' + weekStreak
   ];
   window.open('https://wa.me/?text=' + encodeURIComponent(lines.join('\n')), '_blank');
 }
@@ -397,31 +430,33 @@ document.getElementById('completeBtn').addEventListener('click', () => {
   const entry = todayEntry();
   entry.complete = true;
   saveState();
-  const streak = computeStreak();
+  const weekStreak = computeWeekStreak();
+  const claimedBefore = state.rewardsClaimed || 0;
+  const claimedNow = Math.floor(weekStreak / 2);
   renderAll();
-  if(streak > 0 && streak % 14 === 0){
-    showRewardModal(streak);
+  if(claimedNow > claimedBefore){
+    showRewardModal(weekStreak, claimedNow);
   }
 });
 
-function showRewardModal(streak){
-  const idx = Math.floor(streak/14) - 1;
-  const reward = REWARDS[idx % REWARDS.length];
-  state.rewardsClaimed = Math.floor(streak/14);
+function showRewardModal(weekStreak, claimedNow){
+  const reward = REWARDS[(claimedNow - 1) % REWARDS.length];
+  state.rewardsClaimed = claimedNow;
   saveState();
-  document.getElementById('rewardModalTitle').textContent = `¡${streak} días seguidos!`;
+  document.getElementById('rewardModalTitle').textContent = `¡${weekStreak} semanas completas seguidas!`;
   document.getElementById('rewardModalText').textContent =
-    `Nico ha completado ${streak} días seguidos. Premio: ${reward.desc}`;
+    `Nico ha completado sus ${SESSIONS_PER_WEEK} sesiones cada semana durante ${weekStreak} semanas seguidas. Premio: ${reward.desc}`;
   document.getElementById('rewardModal').style.display = 'flex';
 }
 function closeModal(){ document.getElementById('rewardModal').style.display = 'none'; }
 
 function renderStats(){
-  const streak = computeStreak();
-  document.getElementById('streakNum').textContent = streak;
+  const weekCount = weekSessionCount(new Date());
+  const weekStreak = computeWeekStreak();
+  document.getElementById('streakNum').textContent = weekCount + '/' + SESSIONS_PER_WEEK;
   document.getElementById('totalNum').textContent = totalSessions();
-  const toNext = 14 - (streak % 14);
-  document.getElementById('nextReward').textContent = streak % 14 === 0 ? 14 : toNext;
+  const toNext = 2 - (weekStreak % 2);
+  document.getElementById('nextReward').textContent = (weekStreak % 2 === 0 ? 2 : toNext) + ' sem';
 
   const level = currentLevel();
   const sesionesParaSubir = level === 0 ? (10 - totalSessions()) : level === 1 ? (20 - totalSessions()) : 0;
@@ -438,14 +473,13 @@ function renderStats(){
 }
 
 function renderRewards(){
-  const streak = computeStreak();
-  const claimed = Math.floor(streak/14);
+  const claimed = state.rewardsClaimed || 0;
   const list = document.getElementById('rewardsList');
   list.innerHTML = REWARDS.map(r => `
     <div class="rw ${r.n <= claimed ? 'got' : ''}">
       <div class="n">${r.n <= claimed ? '✓' : r.n}</div>
       <div class="desc">${r.desc}</div>
-      <div class="tag">${r.n*14} días</div>
+      <div class="tag">${r.n*2} semanas</div>
     </div>
   `).join('');
 }
