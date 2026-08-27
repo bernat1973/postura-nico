@@ -537,8 +537,22 @@ function renderHistory(){
     if(isFuture) cls += ' future';
     cell.className = cls;
     cell.textContent = d.getDate();
+    // los días pasados (no el de hoy, no los futuros) se pueden marcar/desmarcar
+    // a mano, por si se olvidó hacerlo el día que tocaba
+    if(ds !== todayKey && !isFuture){
+      cell.style.cursor = 'pointer';
+      cell.title = done ? 'Toca para desmarcar este día' : 'Toca para marcar este día como hecho';
+      cell.onclick = () => toggleHistoryDay(ds);
+    }
     grid.appendChild(cell);
   }
+}
+
+function toggleHistoryDay(ds){
+  if(!state.days[ds]) state.days[ds] = { exercises: {}, complete: false };
+  state.days[ds].complete = !state.days[ds].complete;
+  saveState();
+  renderAll();
 }
 
 function renderAll(){
