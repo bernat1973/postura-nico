@@ -30,6 +30,15 @@
   .stat .lbl{font-size:11px;color:var(--textdim);margin-top:2px;}
   h2{font-size:15px;color:var(--textdim);text-transform:uppercase;letter-spacing:.5px;margin:22px 0 10px;}
   .card{background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:12px;overflow:hidden;}
+  .card.lower-body{background:#34291f;border-color:#80582a;}
+  .card.lower-body.done{border-color:var(--ok);}
+  .card.lower-body .check{border-color:#80582a;}
+  .exercise-section{margin-top:18px;}
+  .exercise-section:first-child{margin-top:0;}
+  .section-title{display:flex;align-items:center;gap:8px;margin:0 0 10px;padding:9px 12px;
+    border-radius:12px;font-size:14px;font-weight:700;letter-spacing:.2px;}
+  .section-title.posture{background:#183b5d;color:var(--accent);border:1px solid var(--border);}
+  .section-title.lower{background:#3a2f1a;color:var(--accent2);border:1px solid #80582a;}
   .card.done{border-color:var(--ok);}
   .card-head{display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;}
   .check{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);flex:none;
@@ -41,8 +50,11 @@
   .chev{color:var(--textdim);font-size:12px;transition:transform .2s;}
   .card.open .chev{transform:rotate(180deg);}
   .card-body{max-height:0;overflow:hidden;transition:max-height .25s ease;}
-  .card.open .card-body{max-height:520px;}
+  .card.open .card-body{max-height:1400px;}
   .card-body-inner{padding:0 14px 16px;}
+  .exercise-illustration{display:block;width:100%;height:auto;max-height:360px;object-fit:contain;
+    margin:0 0 12px;border-radius:12px;background:#101f2e;}
+  .card.lower-body .exercise-illustration{background:#241d17;}
   .steps{margin:0;padding-left:18px;font-size:13.5px;line-height:1.6;color:var(--text);}
   .steps li{margin-bottom:4px;}
   .cond{display:inline-block;margin-top:8px;font-size:11.5px;background:#3a2f1a;color:var(--accent2);
@@ -74,6 +86,23 @@
   .tab{flex:1;text-align:center;padding:9px;border-radius:12px;background:var(--card);
     border:1px solid var(--border);font-size:13px;color:var(--textdim);cursor:pointer;}
   .tab.active{background:var(--accent);color:#06282a;font-weight:700;border-color:var(--accent);}
+  .week-list{display:flex;flex-direction:column;gap:12px;}
+  .week-day{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:13px 14px;cursor:pointer;
+    transition:transform .15s ease,border-color .15s ease;}
+  .week-day:hover{transform:translateY(-1px);border-color:var(--accent);}
+  .week-day:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .week-day.today{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset;}
+  .week-day.tomorrow{border-color:var(--accent2);}
+  .week-day-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+  .week-day-name{font-size:15px;font-weight:700;}
+  .week-badge{margin-left:auto;font-size:10px;font-weight:700;padding:3px 7px;border-radius:8px;
+    background:var(--card2);color:var(--textdim);}
+  .week-day.today .week-badge{background:var(--accent);color:#06282a;}
+  .week-day.tomorrow .week-badge{background:var(--accent2);color:#3a2000;}
+  .week-group{margin-top:8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--accent);}
+  .week-group.lower{color:var(--accent2);}
+  .week-exercises{margin:5px 0 0;padding-left:18px;color:var(--textdim);font-size:12.5px;line-height:1.55;}
+  .week-note{font-size:12.5px;line-height:1.5;color:var(--textdim);margin-top:6px;}
   .rewards-list{display:flex;flex-direction:column;gap:8px;}
   .rw{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);
     border-radius:14px;padding:12px;}
@@ -96,13 +125,14 @@
 <body>
 
 <header>
-  <h1>🦵 Postura — Nico</h1>
+  <h1>🦵 Postura y potencia — Nico</h1>
   <p class="sub" id="dateLine"></p>
 </header>
 
 <main>
   <div class="tabs">
     <div class="tab active" data-tab="hoy">Hoy</div>
+    <div class="tab" data-tab="semana">Semana</div>
     <div class="tab" data-tab="premios">Premios</div>
     <div class="tab" data-tab="historial">Historial</div>
   </div>
@@ -114,14 +144,20 @@
       <div class="stat"><div class="num" id="nextReward">2 sem</div><div class="lbl">p/ premio</div></div>
     </div>
 
-    <h2>Rutina de hoy (5 días/semana)</h2>
+    <h2 id="todayRoutineTitle">Rutina de hoy</h2>
     <div class="info" id="restDayBadge" style="display:none;margin-bottom:8px"></div>
     <div class="info" id="levelBadge" style="margin-bottom:8px"></div>
     <div class="info" style="margin-bottom:12px">
-      🔬 Los estudios científicos apoyan sobre todo el <b>conjunto</b> del programa (control pélvico + puente + dead bug + bird-dog), no cada ejercicio suelto. El estiramiento de cadera no tiene evidencia directa de reducir la lordosis — se mantiene por movilidad.
+      🔬 La rutina postural original se mantiene los cinco días. El tren inferior se añade en microdosis: potencia horizontal el martes, fuerza complementaria el miércoles y activación explosiva breve el jueves. El domingo manda el preparador personal y no se duplica su sesión.
     </div>
     <div id="exerciseList"></div>
 
+  </div>
+
+  <div id="view-semana" style="display:none">
+    <h2>Plan semanal</h2>
+    <div class="info" style="margin-bottom:12px">Consulta cualquier día para preparar con antelación la rutina. Las repeticiones se actualizan automáticamente con el nivel actual.</div>
+    <div class="week-list" id="weekList"></div>
   </div>
 
   <div id="view-premios" style="display:none">
@@ -135,7 +171,7 @@
   </div>
 </main>
 
-<footer>
+<footer id="appFooter">
   <div class="footer-inner">
     <button class="complete-btn" id="completeBtn" disabled>Marca los ejercicios de hoy</button>
     <button class="wa-btn" id="waBtn" onclick="sendWA()">📲 Enviar a papá por WhatsApp</button>
@@ -157,6 +193,7 @@ const EXERCISES = [
   {
     id: 'control_pelvis',
     name: 'Control de pelvis (tumbado)',
+    days: [1,2,3,4,5],
     repsLevels: ['2 series × 10 repeticiones', '2 series × 12 repeticiones', '3 series × 10 repeticiones'],
     steps: [
       'Túmbate boca arriba, rodillas dobladas.',
@@ -170,6 +207,7 @@ const EXERCISES = [
   {
     id: 'flexor_cadera',
     name: 'Estiramiento flexor de cadera',
+    days: [1,2,3,4,5],
     repsLevels: ['2 series × 25 segundos por lado', '2 series × 30 segundos por lado', '3 series × 30 segundos por lado'],
     condicional: 'Solo si notas la parte delantera de la cadera tensa. Si no notas nada, sáltatelo.',
     steps: [
@@ -182,11 +220,12 @@ const EXERCISES = [
     ],
     evidenceNote: 'La evidencia científica sobre si estirar el flexor de cadera reduce la lordosis es floja y contradictoria. Se mantiene por movilidad, no como corrector.',
 
-    video: 'https://www.youtube.com/watch?v=8xZlzcMAtVQ'
+    video: 'https://www.youtube.com/watch?v=Dhx6lmbKYjo'
   },
   {
     id: 'puente',
     name: 'Puente de glúteos',
+    days: [1,2,3,4,5],
     repsLevels: ['3 series × 10 repeticiones', '3 series × 12 repeticiones', '3 series × 15 repeticiones'],
     steps: [
       'Túmbate boca arriba, rodillas dobladas, pies cerca de los glúteos.',
@@ -201,6 +240,7 @@ const EXERCISES = [
   {
     id: 'dead_bug',
     name: 'Dead bug',
+    days: [1,2,3,4,5],
     repsLevels: ['2 series × 8 repeticiones por lado', '3 series × 8 repeticiones por lado', '3 series × 10 repeticiones por lado'],
     steps: [
       'Túmbate boca arriba, brazos hacia el techo.',
@@ -211,11 +251,12 @@ const EXERCISES = [
       'Si la espalda se despega del suelo, baja menos.'
     ],
 
-    video: 'https://www.youtube.com/watch?v=0JFVLaTLzHg'
+    video: 'https://www.youtube.com/watch?v=FpWOTOrq28g'
   },
   {
     id: 'bird_dog',
     name: 'Bird-dog',
+    days: [1,2,3,4,5],
     repsLevels: ['2 series × 6 repeticiones por lado', '2 series × 8 repeticiones por lado', '3 series × 8 repeticiones por lado'],
     steps: [
       'Ponte a cuatro patas: manos bajo hombros, rodillas bajo caderas.',
@@ -231,6 +272,7 @@ const EXERCISES = [
   {
     id: 'brugger',
     name: 'Pausa de postura Brügger',
+    days: [1,2,3,4,5],
     repsLevels: ['3 veces, 5 respiraciones cada vez', '4 veces, 5 respiraciones cada vez', '5 veces, 5 respiraciones cada vez'],
     steps: [
       'Siéntate en el borde de la silla, pies apoyados.',
@@ -239,6 +281,138 @@ const EXERCISES = [
       'Respira 5 veces, tranquilo.',
       'No hace falta meter tripa todo el rato, solo estar cómodo y no arqueado.'
     ]
+  },
+  {
+    id: 'split_squat',
+    name: 'Split squat con mochila',
+    group: 'lower',
+    days: [3],
+    repsLevels: ['3 series × 6 por pierna', '3 series × 8 por pierna', '4 series × 6 por pierna'],
+    steps: [
+      'Coloca una pierna delante y otra atrás, con los pies separados como dos raíles.',
+      'Lleva una mochila con una carga que permita terminar con 2 repeticiones en reserva.',
+      'Baja en 3 segundos, con tronco estable y rodilla alineada con el pie.',
+      'Sube rápido, sin perder la posición. Descansa 90 segundos entre series.',
+      'Si la técnica cambia, reduce la carga; no entrenes al fallo.'
+    ],
+    evidenceNote: 'Objetivo: fuerza unilateral. La fuerza y el entrenamiento combinado muestran mejoras moderadas en fuerza, salto y aceleración en futbolistas jóvenes.',
+    image: 'assets/exercises/split-squat.webp'
+  },
+  {
+    id: 'nordic_assisted',
+    name: 'Nordic asistido o curl deslizante',
+    group: 'lower',
+    days: [3],
+    repsLevels: ['2 series × 3 repeticiones', '3 series × 3 repeticiones', '4 series × 3 repeticiones'],
+    steps: [
+      'Opción preferida: Nordic asistido con banda y un adulto o soporte estable sujetando los tobillos.',
+      'Mantén cadera y tronco alineados; frena la caída todo lo que puedas y apoya las manos al final.',
+      'Alternativa sin ayuda segura: curl femoral deslizante tumbado, con los talones sobre una toalla.',
+      'Haz pocas repeticiones de calidad. Descansa 90 segundos entre series.',
+      'Detente si aparece dolor posterior de muslo, rodilla o espalda.'
+    ],
+    evidenceNote: 'En U14-U15, el Nordic asistido produjo ganancias de fuerza similares al Nordic libre con menos dolor muscular percibido. El volumen bajo evita fatiga innecesaria.',
+    image: 'assets/exercises/nordic-assisted.webp'
+  },
+  {
+    id: 'calf_single',
+    name: 'Elevación de gemelo a una pierna',
+    group: 'lower',
+    days: [3],
+    repsLevels: ['3 series × 10 por pierna', '3 series × 12 por pierna', '4 series × 10 por pierna'],
+    steps: [
+      'Apoya una mano en la pared y trabaja sobre una sola pierna.',
+      'Sube todo lo posible sobre la punta del pie y aguanta 1 segundo arriba.',
+      'Baja despacio durante 2 segundos, sin dejar caer el talón.',
+      'Cuando sea fácil, añade una mochila ligera manteniendo el recorrido completo.'
+    ],
+    image: 'assets/exercises/calf-raise.webp'
+  },
+  {
+    id: 'copenhagen_short',
+    name: 'Copenhagen corto',
+    group: 'lower',
+    days: [3],
+    repsLevels: ['2 series × 15 segundos por lado', '2 series × 20 segundos por lado', '3 series × 20 segundos por lado'],
+    steps: [
+      'Apoya la rodilla de arriba sobre una silla o banco estable y el antebrazo en el suelo.',
+      'Eleva la cadera hasta formar una línea recta entre hombros, cadera y rodilla.',
+      'Mantén la pierna inferior relajada o ayúdate con ella si lo necesitas.',
+      'Detente si aparece dolor inguinal; debe notarse esfuerzo, no dolor.'
+    ],
+    image: 'assets/exercises/copenhagen-short.webp'
+  },
+  {
+    id: 'pogo_jumps',
+    name: 'Saltos reactivos de tobillo',
+    group: 'lower',
+    days: [4],
+    repsLevels: ['2 series × 10 saltos', '3 series × 10 saltos', '3 series × 12 saltos'],
+    steps: [
+      'Salta verticalmente con poca flexión de rodilla, como si el suelo quemara.',
+      'Busca contactos rápidos, silenciosos y el tronco estable.',
+      'Para la serie si pierdes altura o el aterrizaje deja de ser limpio.',
+      'Descansa 60 segundos entre series.'
+    ],
+    image: 'assets/exercises/pogo-jumps.webp'
+  },
+  {
+    id: 'broad_jump',
+    name: 'Salto horizontal',
+    group: 'lower',
+    days: [2],
+    repsLevels: ['3 series × 3 saltos', '3 series × 3 saltos', '4 series × 3 saltos'],
+    steps: [
+      'Carga la cadera, impulsa los brazos y salta hacia delante con máxima intención.',
+      'Aterriza estable sobre ambos pies, con rodillas alineadas.',
+      'Cada salto es independiente: recolócate y descansa 20-30 segundos.',
+      'Deja 90 segundos entre series. Prima la calidad, no el cansancio.'
+    ],
+    image: 'assets/exercises/broad-jump.webp'
+  },
+  {
+    id: 'single_leg_bound',
+    name: 'Salto horizontal a una pierna',
+    group: 'lower',
+    days: [2],
+    repsLevels: ['2 series × 3 por pierna', '3 series × 3 por pierna', '3 series × 4 por pierna'],
+    steps: [
+      'Haz el ejercicio sobre césped o una superficie deportiva estable.',
+      'Impúlsate hacia delante con una pierna y aterriza sobre esa misma pierna.',
+      'Mantén rodilla, cadera y pie alineados; estabiliza el aterrizaje antes de repetir.',
+      'Alterna las piernas y descansa 60-90 segundos entre series.',
+      'Si pierdes estabilidad, reduce la distancia del salto.'
+    ],
+    image: 'assets/exercises/single-leg-bound.webp'
+  },
+  {
+    id: 'cmj',
+    name: 'Salto vertical con contramovimiento',
+    group: 'lower',
+    days: [4],
+    repsLevels: ['2 series × 3 saltos', '3 series × 3 saltos', '3 series × 4 saltos'],
+    steps: [
+      'Desde de pie, baja rápido flexionando cadera y rodillas y salta verticalmente con máxima intención.',
+      'Usa los brazos para impulsarte y aterriza de forma estable y silenciosa.',
+      'Cada salto es independiente: recolócate antes de repetir.',
+      'Descansa 60-90 segundos entre series y termina antes de perder altura.'
+    ],
+    image: 'assets/exercises/cmj.webp'
+  },
+  {
+    id: 'accel_10m',
+    name: 'Aceleraciones de 10 metros',
+    group: 'lower',
+    days: [2,4],
+    repsLevels: ['4 aceleraciones × 10 m', '5 aceleraciones × 10 m', '6 aceleraciones × 10 m'],
+    steps: [
+      'Hazlas en césped o superficie deportiva, después de calentar.',
+      'Sal desde posición inclinada y acelera con máxima intención durante 10 metros.',
+      'Recupera por completo: vuelve andando y espera 60-90 segundos.',
+      'No conviertas el ejercicio en resistencia; termina si baja claramente la velocidad.'
+    ],
+    evidenceNote: 'Los sprints cortos son el estímulo más específico para acelerar. En adolescentes, combinarlos con fuerza y pliometría mejora la aceleración más que limitarse a ejercicios generales.',
+    image: 'assets/exercises/acceleration-10m.webp'
   }
 ];
 
@@ -263,6 +437,7 @@ function loadState(){
 function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
 let state = loadState();
+let previewDay = null;
 
 function todayStr(d=new Date()){
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
@@ -345,22 +520,60 @@ function todayEntry(){
   return state.days[t];
 }
 
-function visibleExercises(){
-  return EXERCISES;
+function visibleExercises(d=new Date()){
+  const day = d.getDay();
+  return EXERCISES.filter(ex => !ex.days || ex.days.includes(day));
 }
+
+function exercisesForWeekday(day){
+  return EXERCISES.filter(ex => !ex.days || ex.days.includes(day));
+}
+
+function viewingDay(){
+  return previewDay === null ? new Date().getDay() : previewDay;
+}
+
+const DAY_PLAN = {
+  0: {title:'Domingo · preparador personal', note:'🏋️ Hoy manda la sesión del preparador personal. No añadas fuerza ni pliometría de esta app.'},
+  1: {title:'Lunes · postura', note:'⚽ Fuerza con el equipo: hoy la app mantiene únicamente la rutina postural habitual.'},
+  2: {title:'Martes · postura + potencia horizontal', note:'⚡ Saltos y aceleraciones con máxima calidad, preferiblemente antes del entrenamiento del equipo.'},
+  3: {title:'Miércoles · postura + fuerza complementaria', note:'🦵 Técnica limpia, 2 repeticiones en reserva y sin llegar al fallo.'},
+  4: {title:'Jueves · postura + activación explosiva', note:'⚡ Microdosis breve antes del equipo: termina activado, nunca cansado.'},
+  5: {title:'Viernes · postura', note:'🧘 Solo la rutina postural habitual; no se añade carga de piernas antes del partido.'},
+  6: {title:'Sábado · partido', note:'🏟️ Partido. No añadas ejercicios: calentamiento y recuperación del equipo.'}
+};
 
 function renderExerciseList(){
   const entry = todayEntry();
   const level = currentLevel();
   const list = document.getElementById('exerciseList');
   list.innerHTML = '';
-  visibleExercises().forEach(ex => {
-    const done = !!entry.exercises[ex.id];
+  const day = viewingDay();
+  const isPreview = previewDay !== null;
+  const plan = DAY_PLAN[day];
+  document.getElementById('todayRoutineTitle').textContent = (isPreview ? 'Vista previa · ' : '') + plan.title;
+
+  const visible = exercisesForWeekday(day);
+  const groups = [
+    {title:'🧍 Rutina postural', className:'posture', exercises:visible.filter(ex => ex.group !== 'lower')},
+    {title:'⚡ Tren inferior', className:'lower', exercises:visible.filter(ex => ex.group === 'lower')}
+  ];
+
+  groups.filter(group => group.exercises.length).forEach(group => {
+    const section = document.createElement('section');
+    section.className = 'exercise-section';
+    const heading = document.createElement('div');
+    heading.className = 'section-title ' + group.className;
+    heading.textContent = group.title;
+    section.appendChild(heading);
+
+    group.exercises.forEach(ex => {
+    const done = !isPreview && !!entry.exercises[ex.id];
     const card = document.createElement('div');
-    card.className = 'card' + (done ? ' done' : '');
+    card.className = 'card' + (ex.group === 'lower' ? ' lower-body' : '') + (done ? ' done' : '');
     card.innerHTML = `
       <div class="card-head" onclick="toggleOpen('${ex.id}')">
-        <div class="check" onclick="event.stopPropagation(); toggleDone('${ex.id}')">${done ? '✓' : ''}</div>
+        <div class="check" ${isPreview ? '' : `onclick="event.stopPropagation(); toggleDone('${ex.id}')"`}>${done ? '✓' : ''}</div>
         <div class="ex-title">
           <div class="name">${ex.name}</div>
           <div class="reps">${ex.repsLevels[level]}</div>
@@ -369,7 +582,8 @@ function renderExerciseList(){
       </div>
       <div class="card-body" id="body-${ex.id}">
         <div class="card-body-inner">
-          ${ex.video ? `<a class="video-link" href="${ex.video}" target="_blank" rel="noopener">🎥 Ver vídeo del ejercicio</a>` : ''}
+          ${ex.image ? `<img class="exercise-illustration" src="${ex.image}" alt="Secuencia ilustrada: ${ex.name}" loading="lazy">` : ''}
+          ${ex.video ? `<a class="video-link" href="${ex.video}" target="_blank" rel="noopener">🎥 Ver vídeo en español</a>` : ''}
           <ol class="steps">${ex.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
           ${ex.condicional ? `<div class="cond">⚠️ ${ex.condicional}</div>` : ''}
           ${ex.evidenceNote ? `<div class="info">🔬 ${ex.evidenceNote}</div>` : ''}
@@ -377,7 +591,10 @@ function renderExerciseList(){
       </div>
     `;
     card.id = 'card-' + ex.id;
-    list.appendChild(card);
+    section.appendChild(card);
+    });
+
+    list.appendChild(section);
   });
 
   updateCompleteBtn();
@@ -396,6 +613,12 @@ function toggleDone(id){
 }
 
 function updateCompleteBtn(){
+  const footer = document.getElementById('appFooter');
+  if(previewDay !== null){
+    footer.style.display = 'none';
+    return;
+  }
+  footer.style.display = '';
   const entry = todayEntry();
   const vis = visibleExercises();
   // los ejercicios condicionales (ej. estiramiento de cadera) no son obligatorios para completar el día
@@ -422,9 +645,15 @@ function sendWA(){
   const weekCount = weekSessionCount(new Date());
   const weekStreak = computeWeekStreak();
   const fecha = new Date().toLocaleDateString('es-ES', { day:'numeric', month:'long' });
+  const completedNames = visibleExercises()
+    .filter(ex => todayEntry().exercises[ex.id])
+    .map(ex => '• ' + ex.name);
   const lines = [
-    'Postura Nico — ' + fecha,
+    'Postura y potencia Nico — ' + fecha,
     '✅ Ejercicios de hoy hechos',
+    '',
+    ...completedNames,
+    '',
     'Esta semana: ' + weekCount + '/' + SESSIONS_PER_WEEK + ' sesiones',
     'Semanas completas seguidas: ' + weekStreak
   ];
@@ -455,10 +684,9 @@ function showRewardModal(weekStreak, claimedNow){
 }
 function closeModal(){ document.getElementById('rewardModal').style.display = 'none'; }
 
-// Plan sugerido de descanso: martes (entreno duro) y sábado (partido).
-// Es solo orientativo — si falla otro día, puede recuperarlo cualquier día de esa semana,
-// incluido martes o sábado, y sigue contando para las 5 sesiones semanales.
-const REST_DAYS = [2, 6]; // getDay(): 0=domingo, 1=lunes, 2=martes ... 6=sábado
+// Cinco sesiones de app, de lunes a viernes. El sábado es partido y el domingo
+// queda reservado al preparador personal para no duplicar fuerza ni pliometría.
+const REST_DAYS = [0, 6]; // getDay(): 0=domingo ... 6=sábado
 
 function renderStats(){
   const weekCount = weekSessionCount(new Date());
@@ -466,15 +694,18 @@ function renderStats(){
   document.getElementById('streakNum').textContent = weekCount + '/' + SESSIONS_PER_WEEK;
 
   const restBadge = document.getElementById('restDayBadge');
-  const isRestDay = REST_DAYS.includes(new Date().getDay());
+  const day = viewingDay();
+  const isRestDay = REST_DAYS.includes(day);
+  const plan = DAY_PLAN[day];
   if(isRestDay && weekCount < SESSIONS_PER_WEEK){
     restBadge.style.display = 'block';
-    restBadge.textContent = '😴 Hoy toca descanso (martes/sábado). Si te falta algún día de esta semana, puedes hacerlo hoy también — sigue contando.';
+    restBadge.textContent = plan.note;
   } else if(isRestDay){
     restBadge.style.display = 'block';
-    restBadge.textContent = '😴 Hoy toca descanso — ya llevas las 5 sesiones de esta semana. 💪';
+    restBadge.textContent = plan.note + ' Ya llevas las 5 sesiones de la app esta semana. 💪';
   } else {
-    restBadge.style.display = 'none';
+    restBadge.style.display = 'block';
+    restBadge.textContent = plan.note;
   }
   document.getElementById('totalNum').textContent = totalSessions();
   const toNext = 2 - (weekStreak % 2);
@@ -504,6 +735,61 @@ function renderRewards(){
       <div class="tag">${r.n*2} semanas</div>
     </div>
   `).join('');
+}
+
+function renderWeekPlan(){
+  const list = document.getElementById('weekList');
+  const level = currentLevel();
+  const names = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  const order = [1,2,3,4,5,6,0];
+  const todayDay = new Date().getDay();
+  const tomorrowDay = new Date(Date.now() + 86400000).getDay();
+  list.innerHTML = '';
+
+  order.forEach(day => {
+    const exercises = exercisesForWeekday(day);
+    const posture = exercises.filter(ex => ex.group !== 'lower');
+    const lower = exercises.filter(ex => ex.group === 'lower');
+    const card = document.createElement('div');
+    card.className = 'week-day' + (day === todayDay ? ' today' : '') + (day === tomorrowDay ? ' tomorrow' : '');
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', `Abrir ejercicios del ${names[day]}`);
+    const badge = day === todayDay ? 'HOY' : day === tomorrowDay ? 'MAÑANA' : '';
+    const exerciseContent = exercises.length ? `
+      <div class="week-group">🧍 Rutina postural</div>
+      <ul class="week-exercises">${posture.map(ex => `<li>${ex.name} — ${ex.repsLevels[level]}</li>`).join('')}</ul>
+      ${lower.length ? `
+        <div class="week-group lower">⚡ Tren inferior</div>
+        <ul class="week-exercises">${lower.map(ex => `<li>${ex.name} — ${ex.repsLevels[level]}</li>`).join('')}</ul>
+      ` : ''}
+    ` : `<div class="week-note">${DAY_PLAN[day].note}</div>`;
+    card.innerHTML = `
+      <div class="week-day-head">
+        <div class="week-day-name">${names[day]}</div>
+        ${badge ? `<div class="week-badge">${badge}</div>` : ''}
+      </div>
+      ${exerciseContent}
+    `;
+    const openDay = () => {
+      previewDay = day === todayDay ? null : day;
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'hoy'));
+      ['hoy','semana','premios','historial'].forEach(v => {
+        document.getElementById('view-'+v).style.display = v === 'hoy' ? 'block' : 'none';
+      });
+      renderExerciseList();
+      renderStats();
+      window.scrollTo({top:0, behavior:'smooth'});
+    };
+    card.addEventListener('click', openDay);
+    card.addEventListener('keydown', event => {
+      if(event.key === 'Enter' || event.key === ' '){
+        event.preventDefault();
+        openDay();
+      }
+    });
+    list.appendChild(card);
+  });
 }
 
 function renderHistory(){
@@ -559,15 +845,21 @@ function renderAll(){
   renderExerciseList();
   renderStats();
   renderRewards();
+  renderWeekPlan();
   renderHistory();
 }
 
 /* ============ TABS ============ */
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
+    if(tab.dataset.tab === 'hoy'){
+      previewDay = null;
+      renderExerciseList();
+      renderStats();
+    }
     document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
     tab.classList.add('active');
-    ['hoy','premios','historial'].forEach(v => {
+    ['hoy','semana','premios','historial'].forEach(v => {
       document.getElementById('view-'+v).style.display = (v === tab.dataset.tab) ? 'block' : 'none';
     });
   });
