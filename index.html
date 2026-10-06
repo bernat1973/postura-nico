@@ -452,7 +452,14 @@ function totalSessions(){
   return Object.values(state.days).filter(d=>d.complete).length;
 }
 
-// Progresión por sesiones completadas (no por calendario): nivel 0 al empezar,
+// Sesiones que incluyeron al menos un ejercicio de tren inferior completado.
+// Se usa para la progresión independiente del bloque de piernas.
+function lowerBodySessions(){
+  const lowerIds = EXERCISES.filter(ex => ex.group === 'lower').map(ex => ex.id);
+  return Object.values(state.days).filter(d => d.complete && lowerIds.some(id => d.exercises && d.exercises[id])).length;
+}
+
+// Progresión POSTURAL por sesiones completadas (no por calendario): nivel 0 al empezar,
 // nivel 1 tras ~2 semanas a 5 días/semana, nivel 2 tras ~4 semanas, mantenimiento tras ~6 semanas.
 // No hay protocolo de mantenimiento validado en la bibliografía (vacío reconocido por los propios
 // meta-análisis) — se sigue el principio general: mismo volumen, menos frecuencia semanal.
@@ -462,6 +469,17 @@ function currentLevel(){
   if(s >= 10) return 1;
   return 0;
 }
+
+// Progresión TREN INFERIOR independiente: sube tras ~3 semanas de sesiones con piernas (~9 sesiones).
+// Cadencia real: 3 días/semana con tren inferior (mar/mié/jue) → nivel 1 a las 3 semanas,
+// nivel 2 a las 6 semanas. Más conservador que la progresión postural.
+function lowerLevel(){
+  const s = lowerBodySessions();
+  if(s >= 18) return 2;
+  if(s >= 9) return 1;
+  return 0;
+}
+
 function isMaintenance(){
   return totalSessions() >= 30;
 }
@@ -545,7 +563,8 @@ const DAY_PLAN = {
 
 function renderExerciseList(){
   const entry = todayEntry();
-  const level = currentLevel();
+  const postureLevel = currentLevel();
+  const lowerLvl = lowerLevel();
   const list = document.getElementById('exerciseList');
   list.innerHTML = '';
   const day = viewingDay();
@@ -569,6 +588,7 @@ function renderExerciseList(){
 
     group.exercises.forEach(ex => {
     const done = !isPreview && !!entry.exercises[ex.id];
+    const lvl = ex.group === 'lower' ? lowerLvl : postureLevel;
     const card = document.createElement('div');
     card.className = 'card' + (ex.group === 'lower' ? ' lower-body' : '') + (done ? ' done' : '');
     card.innerHTML = `
@@ -576,7 +596,7 @@ function renderExerciseList(){
         <div class="check" ${isPreview ? '' : `onclick="event.stopPropagation(); toggleDone('${ex.id}')"`}>${done ? '✓' : ''}</div>
         <div class="ex-title">
           <div class="name">${ex.name}</div>
-          <div class="reps">${ex.repsLevels[level]}</div>
+          <div class="reps">${ex.repsLevels[lvl]}</div>
         </div>
         <div class="chev">▾</div>
       </div>
@@ -657,7 +677,7 @@ function sendWA(){
     'Esta semana: ' + weekCount + '/' + SESSIONS_PER_WEEK + ' sesiones',
     'Semanas completas seguidas: ' + weekStreak
   ];
-  window.open('https://wa.me/?text=' + encodeURIComponent(lines.join('\n')), '_blank');
+  window.open('https://wa.me/34605084948?text=' + encodeURIComponent(lines.join('\n')), '_blank');
 }
 
 document.getElementById('completeBtn').addEventListener('click', () => {
@@ -712,17 +732,24 @@ function renderStats(){
   document.getElementById('nextReward').textContent = (weekStreak % 2 === 0 ? 2 : toNext) + ' sem';
 
   const level = currentLevel();
+  const lLevel = lowerLevel();
   const sesionesParaSubir = level === 0 ? (10 - totalSessions()) : level === 1 ? (20 - totalSessions()) : 0;
+  const lbSessions = lowerBodySessions();
+  const lbParaSubir = lLevel === 0 ? (9 - lbSessions) : lLevel === 1 ? (18 - lbSessions) : 0;
+  let badgeText = '';
   if(isMaintenance()){
-    document.getElementById('levelBadge').textContent =
-      `💪 Mantenimiento — mismas reps del Nivel 3, ya puedes bajar a 2-3 días/semana`;
+    badgeText = `🧍 Postura: mantenimiento · `;
   } else if(level < 2){
-    document.getElementById('levelBadge').textContent =
-      `💪 ${LEVEL_LABEL[level]} — ${sesionesParaSubir} sesiones para subir de nivel`;
+    badgeText = `🧍 Postura: ${LEVEL_LABEL[level]} (${sesionesParaSubir} para subir) · `;
   } else {
-    document.getElementById('levelBadge').textContent =
-      `💪 ${LEVEL_LABEL[level]} — ${30 - totalSessions()} sesiones para pasar a mantenimiento`;
+    badgeText = `🧍 Postura: ${LEVEL_LABEL[level]} (${30 - totalSessions()} p/ mantenimiento) · `;
   }
+  if(lLevel < 2){
+    badgeText += `⚡ Piernas: ${LEVEL_LABEL[lLevel]} (${lbParaSubir} sesiones para subir)`;
+  } else {
+    badgeText += `⚡ Piernas: ${LEVEL_LABEL[lLevel]}`;
+  }
+  document.getElementById('levelBadge').textContent = badgeText;
 }
 
 function renderRewards(){
@@ -739,7 +766,8 @@ function renderRewards(){
 
 function renderWeekPlan(){
   const list = document.getElementById('weekList');
-  const level = currentLevel();
+  const pLevel = currentLevel();
+  const lLevel = lowerLevel();
   const names = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
   const order = [1,2,3,4,5,6,0];
   const todayDay = new Date().getDay();
@@ -758,10 +786,10 @@ function renderWeekPlan(){
     const badge = day === todayDay ? 'HOY' : day === tomorrowDay ? 'MAÑANA' : '';
     const exerciseContent = exercises.length ? `
       <div class="week-group">🧍 Rutina postural</div>
-      <ul class="week-exercises">${posture.map(ex => `<li>${ex.name} — ${ex.repsLevels[level]}</li>`).join('')}</ul>
+      <ul class="week-exercises">${posture.map(ex => `<li>${ex.name} — ${ex.repsLevels[pLevel]}</li>`).join('')}</ul>
       ${lower.length ? `
         <div class="week-group lower">⚡ Tren inferior</div>
-        <ul class="week-exercises">${lower.map(ex => `<li>${ex.name} — ${ex.repsLevels[level]}</li>`).join('')}</ul>
+        <ul class="week-exercises">${lower.map(ex => `<li>${ex.name} — ${ex.repsLevels[lLevel]}</li>`).join('')}</ul>
       ` : ''}
     ` : `<div class="week-note">${DAY_PLAN[day].note}</div>`;
     card.innerHTML = `
