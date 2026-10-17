@@ -352,6 +352,7 @@ const EXERCISES = [
     group: 'lower',
     days: [4],
     repsLevels: ['2 series × 10 saltos', '3 series × 10 saltos', '3 series × 12 saltos'],
+    contacts: [20, 30, 36],
     steps: [
       'Salta verticalmente con poca flexión de rodilla, como si el suelo quemara.',
       'Busca contactos rápidos, silenciosos y el tronco estable.',
@@ -362,11 +363,28 @@ const EXERCISES = [
     video: 'https://www.youtube.com/watch?v=OPMX079ZmY8'
   },
   {
+    id: 'stick_landing',
+    name: 'Aterrizaje clavado',
+    group: 'lower',
+    days: [2],
+    repsLevels: ['2 series × 4 aterrizajes', '2 series × 5 aterrizajes', '3 series × 4 aterrizajes'],
+    contacts: [8, 10, 12],
+    steps: [
+      'Es el primer ejercicio del martes: prepara los aterrizajes antes de saltar lejos.',
+      'De puntillas con los brazos arriba, déjate caer rápido a media sentadilla y frena en seco.',
+      'Aguanta 2 segundos quieto: rodillas en la línea de los pies, pecho delante de las rodillas, sin ruido.',
+      'Si las rodillas se van hacia dentro o te tambaleas, esa repetición no cuenta.',
+      'Descansa 60 segundos entre series.'
+    ],
+    evidenceNote: 'Aprender a frenar y aterrizar alineado es la base de la pliometría en adolescentes y reduce la carga sobre la rodilla en los saltos posteriores.'
+  },
+  {
     id: 'broad_jump',
     name: 'Salto horizontal',
     group: 'lower',
     days: [2],
     repsLevels: ['3 series × 3 saltos', '3 series × 3 saltos', '4 series × 3 saltos'],
+    contacts: [9, 9, 12],
     steps: [
       'Carga la cadera, impulsa los brazos y salta hacia delante con máxima intención.',
       'Aterriza estable sobre ambos pies, con rodillas alineadas.',
@@ -382,6 +400,7 @@ const EXERCISES = [
     group: 'lower',
     days: [2],
     repsLevels: ['2 series × 3 por pierna', '3 series × 3 por pierna', '3 series × 4 por pierna'],
+    contacts: [12, 18, 24],
     steps: [
       'Haz el ejercicio sobre césped o una superficie deportiva estable.',
       'Impúlsate hacia delante con una pierna y aterriza sobre esa misma pierna.',
@@ -393,11 +412,29 @@ const EXERCISES = [
     video: 'https://www.youtube.com/watch?v=cmyiQCAZoCU'
   },
   {
+    id: 'lateral_stick',
+    name: 'Salto lateral con aterrizaje clavado',
+    group: 'lower',
+    days: [4],
+    repsLevels: ['2 series × 3 por lado', '2 series × 4 por lado', '3 series × 3 por lado'],
+    contacts: [12, 16, 18],
+    steps: [
+      'Sobre una pierna, salta de lado hacia la otra pierna, como un patinador.',
+      'Aterriza sobre la pierna contraria y aguanta 2 segundos sin moverte.',
+      'La rodilla apunta al pie y la cadera no se cae; el tronco no se inclina hacia fuera.',
+      'Empieza con distancia corta y alárgala solo si el aterrizaje sale limpio.',
+      'Corta la serie si una repetición sale peor que la primera. Descansa 60 segundos entre series.'
+    ],
+    condicional: 'Si notas molestia en la ingle, salta este ejercicio ese día.',
+    evidenceNote: 'El fútbol se juega con cambios de dirección: el plano lateral prepara la rodilla y la cadera para frenar de lado.'
+  },
+  {
     id: 'cmj',
     name: 'Salto vertical con contramovimiento',
     group: 'lower',
     days: [4],
     repsLevels: ['2 series × 3 saltos', '3 series × 3 saltos', '3 series × 4 saltos'],
+    contacts: [6, 9, 12],
     steps: [
       'Desde de pie, baja rápido flexionando cadera y rodillas y salta verticalmente con máxima intención.',
       'Usa los brazos para impulsarte y aterriza de forma estable y silenciosa.',
@@ -553,6 +590,11 @@ function visibleExercises(d=new Date()){
 
 function exercisesForWeekday(day){
   return EXERCISES.filter(ex => !ex.days || ex.days.includes(day));
+}
+
+function jumpContacts(day){
+  const lvl = lowerLevel();
+  return exercisesForWeekday(day).reduce((sum, ex) => sum + (ex.contacts ? ex.contacts[lvl] : 0), 0);
 }
 
 function viewingDay(){
@@ -733,7 +775,8 @@ function renderStats(){
     restBadge.textContent = plan.note + ' Ya llevas las 5 sesiones de la app esta semana. 💪';
   } else {
     restBadge.style.display = 'block';
-    restBadge.textContent = plan.note;
+    const contactsToday = jumpContacts(day);
+    restBadge.textContent = plan.note + (contactsToday ? ` Contactos de salto hoy: ${contactsToday}.` : '');
   }
   document.getElementById('totalNum').textContent = totalSessions();
   const toNext = 2 - (weekStreak % 2);
