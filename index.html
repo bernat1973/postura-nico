@@ -518,11 +518,14 @@ function currentLevel(){
 // Progresión TREN INFERIOR independiente: sube tras ~3 semanas de sesiones con piernas (~9 sesiones).
 // Cadencia real: 3 días/semana con tren inferior (mar/mié/jue) → nivel 1 a las 3 semanas,
 // nivel 2 a las 6 semanas. Más conservador que la progresión postural.
+// Vuelta tras la molestia inguinal: volumen de nivel 1 hasta el domingo 25/10/2026 inclusive.
+const LOWER_RETURN_CAP = { until: '2026-10-25', level: 0 };
+
 function lowerLevel(){
   const s = lowerBodySessions();
-  if(s >= 18) return 2;
-  if(s >= 9) return 1;
-  return 0;
+  const lvl = s >= 18 ? 2 : s >= 9 ? 1 : 0;
+  if(todayStr() <= LOWER_RETURN_CAP.until) return Math.min(lvl, LOWER_RETURN_CAP.level);
+  return lvl;
 }
 
 function isMaintenance(){

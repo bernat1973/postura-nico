@@ -1,4 +1,4 @@
-const CACHE = 'postura-nico-v24';
+const CACHE = 'postura-nico-v25';
 const FILES = [
   './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png',
   './assets/exercises/split-squat.webp',
